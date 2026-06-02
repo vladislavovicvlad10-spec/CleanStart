@@ -1,0 +1,5 @@
+PyQt6>=6.6,<7
+Send2Trash>=1.8,<2
+pyinstaller>=6.0,<7
+pytest>=7.4,<9
+black>=23.11,<26
