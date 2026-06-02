@@ -23,9 +23,9 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QSizePolicy,
+    QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
-    QTabWidget,
     QTextEdit,
     QVBoxLayout,
     QWidget,
@@ -40,6 +40,20 @@ from core.temp_cleaner import (
     TempScanResult,
     cleanup_temp_items,
     scan_temp_items,
+)
+from gui.dashboard import (
+    AppShell,
+    BottomStatusBar,
+    GlassCard,
+    GradientButton,
+    HeroIllustration,
+    IconBadge,
+    QuickActionTile,
+    RecentActivityRow,
+    SafetyBanner,
+    SummaryCard,
+    ToggleSwitch,
+    TopNavBar,
 )
 from utils.formatting import format_size, truncate_middle
 from utils.crash_log import log_exception
@@ -211,19 +225,25 @@ class CleanStartWindow(QMainWindow):
         super().__init__()
         self.language = load_language()
         self.setWindowTitle(self.t("app_window_title", version=VERSION))
-        self.setMinimumSize(1040, 700)
-        self.resize(1220, 820)
+        self.setMinimumSize(1180, 760)
+        self.resize(1380, 860)
 
         self.activity = ActivityLog()
         self.temp_result: TempScanResult | None = None
         self.temp_items_by_path: dict[str, TempItem] = {}
         self.worker: Worker | None = None
         self.action_buttons: list[QPushButton] = []
+        self.dashboard_cards: dict[str, SummaryCard] = {}
+        self.recent_activity_rows: list[RecentActivityRow] = []
+        self.quick_action_tiles: list[QuickActionTile] = []
 
         self.last_temp_status = self.t("not_scanned_yet")
         self.last_startup_status = self.t("not_scanned_yet")
         self.last_disk_status = self.t("not_scanned_yet")
         self.last_log_status = self.t("not_scanned_yet")
+        self.last_startup_count = 0
+        self.last_disk_count = 0
+        self.last_disk_root = self.t("not_scanned_yet")
 
         self._setup_style()
         self._build_ui()
@@ -409,75 +429,206 @@ class CleanStartWindow(QMainWindow):
 
     def _build_ui(self) -> None:
         self.action_buttons = []
-        root = QWidget()
+        root = AppShell(Path("assets") / "dashboard" / "background.png")
         layout = QVBoxLayout(root)
-        layout.setContentsMargins(22, 18, 22, 22)
-        layout.setSpacing(14)
+        layout.setContentsMargins(26, 22, 26, 22)
+        layout.setSpacing(18)
 
-        header_row = QHBoxLayout()
-        title_group = QVBoxLayout()
-        header = self._label(self.t("app_heading"), role="title")
-        subtitle = self._muted(self.t("subtitle"))
-        title_group.addWidget(header)
-        title_group.addWidget(subtitle)
-        header_row.addLayout(title_group, 1)
-        version = self._chip(f"v{VERSION}")
-        header_row.addWidget(version, 0, Qt.AlignmentFlag.AlignTop)
+        self.tabs = QStackedWidget()
+        self.navbar = TopNavBar(self.navigate_to_page)
+        self.tabs.currentChanged.connect(self.navbar.set_active)
 
-        warning = self._notice(self.t("safety_header_notice"))
+        self.dashboard_page = self._dashboard_tab()
+        self.temp_page = self._temp_tab()
+        self.startup_page = self._startup_tab()
+        self.disk_page = self._disk_tab()
+        self.log_page = self._log_tab()
+        self.about_page = self._about_tab()
 
-        self.tabs = QTabWidget()
-        self.tabs.addTab(self._dashboard_tab(), self.t("dashboard"))
-        self.tabs.addTab(self._temp_tab(), self.t("temp_cleaner"))
-        self.tabs.addTab(self._startup_tab(), self.t("startup_analyzer"))
-        self.tabs.addTab(self._disk_tab(), self.t("disk_analyzer"))
-        self.tabs.addTab(self._log_tab(), self.t("activity_log"))
-        self.tabs.addTab(self._about_tab(), self.t("settings_about"))
+        for page in (
+            self.dashboard_page,
+            self.temp_page,
+            self.startup_page,
+            self.disk_page,
+            self.log_page,
+            self.about_page,
+        ):
+            self.tabs.addWidget(page)
 
-        layout.addLayout(header_row)
-        layout.addWidget(warning)
+        layout.addWidget(self.navbar)
         layout.addWidget(self.tabs, 1)
         self.setCentralWidget(root)
+
+    def navigate_to_page(self, index: int) -> None:
+        if 0 <= index < self.tabs.count():
+            self.tabs.setCurrentIndex(index)
 
     def _dashboard_tab(self) -> QWidget:
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        layout.setContentsMargins(18, 18, 18, 18)
-        layout.setSpacing(16)
+        layout.setContentsMargins(18, 2, 18, 0)
+        layout.setSpacing(12)
 
-        heading = self._label(self.t("app_title", version=VERSION), role="sectionTitle")
-        subheading = self._muted(self.t("dashboard_subtitle"))
-        layout.addWidget(heading)
-        layout.addWidget(subheading)
+        hero = QHBoxLayout()
+        hero.setSpacing(12)
+        hero_copy = QVBoxLayout()
+        hero_copy.setContentsMargins(28, 28, 0, 0)
+        hero_copy.setSpacing(10)
+        headline = QLabel("Keep your PC clean,\nfast, and running at its best.")
+        headline.setStyleSheet(
+            "color: #07143d; font-size: 36px; font-weight: 900; line-height: 1.10;"
+        )
+        subtitle = QLabel(
+            "Safety-first Windows maintenance. Preview first, confirm always."
+        )
+        subtitle.setStyleSheet("color: #42577a; font-size: 16px; font-weight: 600;")
+        hero_copy.addWidget(headline)
+        hero_copy.addWidget(subtitle)
+        self.hero_safety_banner = SafetyBanner(
+            "CleanStart is an advisor and cleanup helper.",
+            "It does not replace antivirus and does not detect malware.",
+        )
+        hero_copy.addWidget(self.hero_safety_banner)
+        hero_copy.addStretch(1)
+        hero.addLayout(hero_copy, 1)
+        self.hero_illustration = HeroIllustration(
+            Path("assets") / "dashboard" / "hero_illustration.png"
+        )
+        hero.addWidget(self.hero_illustration, 1)
+        layout.addLayout(hero)
 
-        cards = QGridLayout()
-        cards.setSpacing(12)
-        self.dashboard_temp_value = self._status_card(
-            cards, 0, 0, self.t("temp_cleaner"), self.last_temp_status
+        card_row = QHBoxLayout()
+        card_row.setSpacing(13)
+        self.dashboard_cards["temp"] = SummaryCard(
+            "Temp Cleaner",
+            "Review and clean temporary files",
+            "drop",
+            "blue",
+            "Items found",
+            "Total size",
+            "Review now",
+            self.preview_temp,
         )
-        self.dashboard_startup_value = self._status_card(
-            cards, 0, 1, self.t("startup_analyzer"), self.last_startup_status
+        self.dashboard_cards["startup"] = SummaryCard(
+            "Startup Analyzer",
+            "Analyze startup entries and performance impact",
+            "rocket",
+            "purple",
+            "Entries found",
+            "Changes made",
+            "Analyze startup",
+            self.analyze_startup,
         )
-        self.dashboard_disk_value = self._status_card(
-            cards, 1, 0, self.t("disk_analyzer"), self.last_disk_status
+        self.dashboard_cards["disk"] = SummaryCard(
+            "Disk Analyzer",
+            "View disk usage and large files",
+            "chart",
+            "orange",
+            "Items shown",
+            "Last scan",
+            "Analyze disk",
+            self.scan_profile_disk,
         )
-        self.dashboard_log_value = self._status_card(
-            cards, 1, 1, self.t("activity_log"), self.last_log_status
+        self.dashboard_cards["log"] = SummaryCard(
+            "Activity Log",
+            "Review recent scans and actions",
+            "list",
+            "green",
+            "Entries",
+            "Latest activity",
+            "Open log",
+            lambda: self.navigate_to_page(4),
         )
-        layout.addLayout(cards)
+        self.dashboard_cards["settings"] = SummaryCard(
+            "Settings",
+            "Configure CleanStart and preferences",
+            "gear",
+            "soft",
+            "Version",
+            "Privacy",
+            "Open settings",
+            lambda: self.navigate_to_page(5),
+        )
+        self.dashboard_temp_value = self.dashboard_cards["temp"].status_value
+        self.dashboard_startup_value = self.dashboard_cards["startup"].status_value
+        self.dashboard_disk_value = self.dashboard_cards["disk"].status_value
+        self.dashboard_log_value = self.dashboard_cards["log"].status_value
+        for card in self.dashboard_cards.values():
+            card_row.addWidget(card)
+        layout.addLayout(card_row)
 
-        actions_box = self._card(self.t("quick_actions"))
-        actions = QHBoxLayout(actions_box)
-        actions.setSpacing(10)
-        actions.addWidget(self._button(self.t("preview_temp_files"), self.preview_temp))
-        actions.addWidget(self._button(self.t("analyze_startup"), self.analyze_startup))
-        actions.addWidget(
-            self._button(self.t("scan_profile_folders"), self.scan_profile_disk)
-        )
-        actions.addStretch()
-        layout.addWidget(actions_box)
-        layout.addStretch(1)
+        lower = QHBoxLayout()
+        lower.setSpacing(17)
+        self.quick_actions_panel = self._quick_actions_panel()
+        self.recent_activity_panel = self._recent_activity_panel()
+        lower.addWidget(self.quick_actions_panel, 1)
+        lower.addWidget(self.recent_activity_panel, 1)
+        layout.addLayout(lower, 1)
+
+        self.dashboard_recycle_toggle = ToggleSwitch(True)
+        self.dashboard_recycle_toggle.toggled.connect(self.set_recycle_bin_preference)
+        self.dashboard_status_bar = BottomStatusBar(self.dashboard_recycle_toggle)
+        layout.addWidget(self.dashboard_status_bar)
         return tab
+
+    def _quick_actions_panel(self) -> GlassCard:
+        panel = GlassCard(radius=24)
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(20, 17, 20, 17)
+        layout.setSpacing(13)
+        title = QHBoxLayout()
+        title.addWidget(IconBadge("flash", "blue", 34))
+        heading = QLabel("Quick actions")
+        heading.setStyleSheet("color: #07143d; font-size: 18px; font-weight: 900;")
+        title.addWidget(heading)
+        title.addStretch()
+        layout.addLayout(title)
+        actions = QHBoxLayout()
+        actions.setSpacing(13)
+        self.quick_action_tiles = [
+            QuickActionTile(
+                "Preview temp files", "document", "blue", self.preview_temp
+            ),
+            QuickActionTile(
+                "Analyze startup", "rocket", "purple", self.analyze_startup
+            ),
+            QuickActionTile(
+                "Scan profile folders", "folder", "blue", self.scan_profile_disk
+            ),
+            QuickActionTile(
+                "Open activity log", "list", "green", lambda: self.navigate_to_page(4)
+            ),
+        ]
+        for tile in self.quick_action_tiles:
+            actions.addWidget(tile)
+        layout.addLayout(actions)
+        self.quick_safety_banner = SafetyBanner(
+            "Review before deleting. Cleanup uses Recycle Bin when supported.",
+            "You're in control: preview, confirm, always.",
+        )
+        layout.addWidget(self.quick_safety_banner)
+        return panel
+
+    def _recent_activity_panel(self) -> GlassCard:
+        panel = GlassCard(radius=24)
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(20, 17, 20, 17)
+        layout.setSpacing(10)
+        header = QHBoxLayout()
+        header.addWidget(IconBadge("activity", "blue", 34))
+        title = QLabel("Recent activity")
+        title.setStyleSheet("color: #07143d; font-size: 18px; font-weight: 900;")
+        header.addWidget(title)
+        header.addStretch()
+        header.addWidget(
+            GradientButton("View all", "soft", lambda: self.navigate_to_page(4))
+        )
+        layout.addLayout(header)
+        self.recent_activity_layout = QVBoxLayout()
+        self.recent_activity_layout.setSpacing(1)
+        layout.addLayout(self.recent_activity_layout)
+        self.rebuild_recent_activity()
+        return panel
 
     def _temp_tab(self) -> QWidget:
         tab = QWidget()
@@ -519,6 +670,9 @@ class CleanStartWindow(QMainWindow):
         )
         self.recycle_check = QCheckBox(self.t("recycle_bin"))
         self.recycle_check.setChecked(True)
+        if hasattr(self, "dashboard_recycle_toggle"):
+            self.recycle_check.setChecked(self.dashboard_recycle_toggle.isChecked())
+            self.recycle_check.toggled.connect(self.dashboard_recycle_toggle.setChecked)
         actions.addWidget(self.preview_temp_button)
         actions.addWidget(self.dry_run_button)
         actions.addWidget(self.clean_temp_button)
@@ -845,6 +999,140 @@ class CleanStartWindow(QMainWindow):
         self.dashboard_startup_value.setText(self.last_startup_status)
         self.dashboard_disk_value.setText(self.last_disk_status)
         self.dashboard_log_value.setText(truncate_middle(self.last_log_status, 86))
+        if self.dashboard_cards:
+            temp_card = self.dashboard_cards["temp"]
+            if self.temp_result:
+                temp_card.primary_value.setText(str(self.temp_result.total_count))
+                temp_card.secondary_value.setText(
+                    format_size(self.temp_result.total_size)
+                )
+            else:
+                temp_card.primary_value.setText("0")
+                temp_card.secondary_value.setText("Pending")
+            temp_card.status_value.setText(self.last_temp_status)
+
+            startup_card = self.dashboard_cards["startup"]
+            startup_card.primary_value.setText(str(self.last_startup_count))
+            startup_card.secondary_value.setText(self.t("status_changes_zero"))
+            startup_card.status_value.setText(self.last_startup_status)
+
+            disk_card = self.dashboard_cards["disk"]
+            disk_card.primary_value.setText(str(self.last_disk_count))
+            disk_card.secondary_value.setText(
+                "Pending"
+                if self.last_disk_root == self.t("not_scanned_yet")
+                else truncate_middle(self.last_disk_root, 18)
+            )
+            disk_card.status_value.setText(self.last_disk_status)
+
+            log_card = self.dashboard_cards["log"]
+            log_card.primary_value.setText(str(len(self.activity.entries)))
+            log_card.secondary_value.setText("Local only")
+            log_card.status_value.setText(truncate_middle(self.last_log_status, 48))
+
+            settings_card = self.dashboard_cards["settings"]
+            settings_card.primary_value.setText(f"v{VERSION}")
+            settings_card.secondary_value.setText("Local only")
+            settings_card.status_value.setText("No telemetry")
+
+        if hasattr(self, "dashboard_status_bar"):
+            last_scan = self.t("not_scanned_yet")
+            if self.activity.entries:
+                last_scan = self.activity.entries[-1].timestamp.split(" ", 1)[-1]
+            self.dashboard_status_bar.last_scan.setText(f"Last scan: {last_scan}")
+
+        if hasattr(self, "recent_activity_layout"):
+            self.rebuild_recent_activity()
+
+    def set_recycle_bin_preference(self, checked: bool) -> None:
+        if hasattr(self, "recycle_check"):
+            self.recycle_check.setChecked(checked)
+
+    def rebuild_recent_activity(self) -> None:
+        while self.recent_activity_layout.count():
+            item = self.recent_activity_layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        entries = self.activity.entries[-5:]
+        if not entries:
+            rows = [
+                (
+                    "CleanStart started",
+                    "Dashboard loaded. No scans have been run yet.",
+                    "Now",
+                    "shield",
+                    "green",
+                ),
+                (
+                    "Temp Cleaner ready",
+                    "Preview safe temp files before deleting.",
+                    "Ready",
+                    "drop",
+                    "blue",
+                ),
+                (
+                    "Startup Analyzer ready",
+                    "Read-only advisory mode. No changes made.",
+                    "Ready",
+                    "rocket",
+                    "purple",
+                ),
+                (
+                    "Disk Analyzer ready",
+                    "Scan profile folders or one selected folder.",
+                    "Ready",
+                    "chart",
+                    "orange",
+                ),
+                (
+                    "Activity Log local only",
+                    "No telemetry, upload, account, or cloud sync.",
+                    "Local",
+                    "list",
+                    "green",
+                ),
+            ]
+        else:
+            rows = [
+                (
+                    entry.action,
+                    truncate_middle(entry.detail, 74),
+                    entry.timestamp.split(" ", 1)[-1],
+                    self._activity_icon(entry.action),
+                    self._activity_accent(entry.action),
+                )
+                for entry in reversed(entries)
+            ]
+
+        self.recent_activity_rows = []
+        for title, detail, time_text, icon, accent in rows:
+            row = RecentActivityRow(title, detail, time_text, icon, accent)
+            self.recent_activity_rows.append(row)
+            self.recent_activity_layout.addWidget(row)
+
+    def _activity_icon(self, action: str) -> str:
+        lowered = action.lower()
+        if "temp" in lowered or "cleanup" in lowered:
+            return "drop"
+        if "startup" in lowered:
+            return "rocket"
+        if "disk" in lowered:
+            return "chart"
+        if "log" in lowered:
+            return "list"
+        return "shield"
+
+    def _activity_accent(self, action: str) -> str:
+        lowered = action.lower()
+        if "startup" in lowered:
+            return "purple"
+        if "disk" in lowered:
+            return "orange"
+        if "log" in lowered:
+            return "green"
+        return "blue"
 
     def apply_language_selection(self) -> None:
         language = self.language_selector.currentData()
@@ -1137,6 +1425,7 @@ class CleanStartWindow(QMainWindow):
                 self.startup_table.setRowHeight(row, 36)
 
         count = len(valid_entries)
+        self.last_startup_count = count
         self.startup_entries_stat.value_label.setText(str(count))  # type: ignore[attr-defined]
         self.startup_change_stat.value_label.setText(self.t("status_changes_zero"))  # type: ignore[attr-defined]
         self.startup_summary.setText(self.t("startup_no_changes", count=count))
@@ -1202,6 +1491,8 @@ class CleanStartWindow(QMainWindow):
         self.disk_folder_stat.setText(truncate_middle(root_text, 42))
         self.disk_reviewed_stat.setText(str(scan.scanned_items))
         self.disk_shown_stat.setText(str(len(scan.items)))
+        self.last_disk_count = len(scan.items)
+        self.last_disk_root = root_text
 
         summary = self.t(
             "disk_scan_complete",

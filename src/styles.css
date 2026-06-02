@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #081742;
+  background: #edf6ff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1200px;
+  min-height: 720px;
+  overflow: hidden;
+  font-family:
+    Inter,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.clean-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.35) transparent;
+}
+
+.clean-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.clean-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.clean-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.28);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+.hero-art-stage::after {
+  content: "";
+  position: absolute;
+  inset: 18px 28px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 52% 44%, rgba(255, 255, 255, 0.34), transparent 34%),
+    radial-gradient(circle at 52% 55%, rgba(59, 130, 246, 0.16), transparent 56%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.hero-reference-visual {
+  transform: translateX(8px);
+  filter: saturate(1.06) contrast(1.01);
+}
+
+@media (max-width: 1366px) {
+  .grid-cols-5 {
+    gap: 0.75rem;
+  }
+
+  .dashboard-layout {
+    max-width: 1328px;
+  }
+}
+
+@media (max-height: 820px) {
+  .dashboard-layout {
+    padding-bottom: 0.25rem;
+  }
+}

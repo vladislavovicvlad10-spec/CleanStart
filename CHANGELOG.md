@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.2.0-alpha - 2026-06-02
+
+### Added
+
+- Added a new Tauri + React + TypeScript + Tailwind UI prototype.
+- Added a redesigned Dashboard with light glassmorphism styling, centered top
+  navigation, summary cards, quick actions, recent activity, and bottom status.
+- Added interactive prototype navigation, buttons, and Recycle Bin toggle.
+- Added a Dashboard screenshot for the `v0.2.0-alpha` UI prototype.
+
+### Known Limitations
+
+- Real cleanup is not implemented or connected in the Tauri prototype yet.
+- Startup analysis, disk analysis, and cleanup screens currently use mock/demo
+  data only.
+- This alpha should not be described as a working cleaner.
+
 ## v0.1.0 - 2026-06-02
 
 ### Added
