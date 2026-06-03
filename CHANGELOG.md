@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.2.0-alpha.1 - 2026-06-03
+
+### Added
+
+- Real Temp Cleaner preview scan for approved temp/cache locations.
+- Dry run support.
+- Selected cleanup through Recycle Bin.
+- Browser cache cleanup for cache folders only.
+- Rust backend validation for cleanup paths.
+- Cleanup confirmation and result modals.
+- Partial failure handling for locked/protected files.
+- Compact warning summary with details.
+- Auto refresh after cleanup.
+
+### Changed
+
+- Temp Cleaner no longer relies on mock rows after preview scan.
+- Duplicate temp roots are deduplicated.
+- User-facing paths are cleaned up.
+- Last scan time is synchronized.
+- Cleanup result wording now distinguishes completed, completed with warnings,
+  and could not finish.
+
+### Safety
+
+- Permanent deletion remains disabled.
+- No cookies/passwords/history/sessions are cleaned.
+- Personal folders are not targeted.
+- Locked/protected files are skipped and reported.
+- Approved root folders are not deleted directly.
+
+### Known Limitations
+
+- Some files may be skipped if locked by Windows or browsers.
+- Users may need to close browsers and scan again to clean more cache.
+- Startup Analyzer and Disk Analyzer remain prototype modules.
+
 ## v0.2.0-alpha - 2026-06-02
 
 ### Added
@@ -12,9 +49,8 @@
 
 ### Known Limitations
 
-- Real cleanup is not implemented or connected in the Tauri prototype yet.
-- Startup analysis, disk analysis, and cleanup screens currently use mock/demo
-  data only.
+- Real cleanup was not implemented or connected in this first Tauri prototype.
+- Startup analysis, disk analysis, and cleanup screens used mock/demo data only.
 - This alpha should not be described as a working cleaner.
 
 ## v0.1.0 - 2026-06-02
@@ -38,5 +74,6 @@
 ### Safety
 
 - Cleanup is no longer automatic.
-- Browser caches, Prefetch, Program Files, and broad Windows folders are not part of v0.1.0 cleanup.
+- Browser caches, Prefetch, Program Files, and broad Windows folders are not part
+  of v0.1.0 cleanup.
 - Startup entries are never disabled automatically.

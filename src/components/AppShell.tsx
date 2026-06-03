@@ -1,9 +1,13 @@
 import clsx from "clsx";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   Activity,
   ChevronRight,
   HeartPulse,
+  Maximize2,
+  Minus,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
@@ -23,12 +27,14 @@ export function AppShell({
   children,
   recycleBin,
   onRecycleBinChange,
+  lastScanTime,
 }: {
   activeScreen: ScreenId;
   onNavigate: (screen: ScreenId) => void;
   children: ReactNode;
   recycleBin: boolean;
   onRecycleBinChange: (checked: boolean) => void;
+  lastScanTime: string | null;
 }) {
   return (
     <div className="relative h-screen overflow-hidden bg-[#edf6ff] text-ink">
@@ -38,12 +44,12 @@ export function AppShell({
         className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-95"
       />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 via-white/15 to-blue-50/55" />
-      <div className="relative mx-auto flex h-screen w-full max-w-[1520px] flex-col px-10 py-5 2xl:px-4">
+      <div className="app-window-frame relative mx-auto flex h-screen w-full max-w-none flex-col px-8 py-5">
         <TopNav activeScreen={activeScreen} onNavigate={onNavigate} />
-        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4 pr-1 pt-5 clean-scrollbar">
+        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-3 pt-4 clean-scrollbar">
           {children}
         </main>
-        <BottomStatusBar recycleBin={recycleBin} onRecycleBinChange={onRecycleBinChange} />
+        <BottomStatusBar recycleBin={recycleBin} onRecycleBinChange={onRecycleBinChange} lastScanTime={lastScanTime} />
       </div>
     </div>
   );
@@ -57,7 +63,10 @@ export function TopNav({
   onNavigate: (screen: ScreenId) => void;
 }) {
   return (
-    <header className="relative mx-auto flex min-h-[54px] w-full max-w-[1480px] items-center">
+    <header
+      className="relative mx-auto flex min-h-[54px] w-full max-w-none items-center"
+      data-tauri-drag-region
+    >
       <button
         className="relative z-10 flex items-center gap-3 rounded-3xl text-left transition-transform hover:-translate-y-0.5"
         onClick={() => onNavigate("dashboard")}
@@ -90,7 +99,53 @@ export function TopNav({
           );
         })}
       </nav>
+      <WindowControls />
     </header>
+  );
+}
+
+function WindowControls() {
+  const controls = [
+    {
+      label: "Minimize window",
+      icon: Minus,
+      onClick: () => getCurrentWindow().minimize(),
+      className: "hover:bg-blue-50 hover:text-blue-700",
+    },
+    {
+      label: "Maximize or restore window",
+      icon: Maximize2,
+      onClick: () => getCurrentWindow().toggleMaximize(),
+      className: "hover:bg-blue-50 hover:text-blue-700",
+    },
+    {
+      label: "Close window",
+      icon: X,
+      onClick: () => getCurrentWindow().close(),
+      className: "hover:bg-rose-500 hover:text-white",
+    },
+  ];
+
+  return (
+    <div className="absolute right-0 top-1/2 z-20 flex -translate-y-1/2 items-center gap-1 rounded-full border border-white/75 bg-white/55 p-1 shadow-soft backdrop-blur-xl">
+      {controls.map((control) => {
+        const Icon = control.icon;
+        return (
+          <button
+            key={control.label}
+            aria-label={control.label}
+            data-testid={control.label.toLowerCase().replace(/\s+/g, "-")}
+            onClick={control.onClick}
+            className={clsx(
+              "grid h-9 w-9 place-items-center rounded-full text-slate-600 transition-colors duration-150",
+              control.className,
+            )}
+          >
+            <Icon className="h-4 w-4" />
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -103,7 +158,7 @@ export function SummaryCard({
 }) {
   return (
     <GlassCard
-      className="flex min-h-[202px] flex-col p-4"
+      className="flex min-h-[188px] flex-col p-4"
       data-check-overlap="dashboard-summary"
       data-component="summary-card"
     >
@@ -117,7 +172,7 @@ export function SummaryCard({
           <p className="mt-1 text-[13px] leading-5 text-muted">{card.description}</p>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 divide-x divide-blue-100">
+      <div className="mt-3 grid grid-cols-2 divide-x divide-blue-100">
         {card.metrics.map((metric) => (
           <div key={metric.label} className="px-2 first:pl-0">
             <div className="truncate text-[1.35rem] font-black tracking-tight text-ink">{metric.value}</div>
@@ -125,7 +180,7 @@ export function SummaryCard({
           </div>
         ))}
       </div>
-      <div className="mt-auto flex items-center gap-2.5 pt-4">
+      <div className="mt-auto flex items-center gap-2.5 pt-3">
         <Button accent={card.accent} onClick={onAction} className="flex-1">
           {card.actionLabel}
         </Button>
@@ -157,10 +212,10 @@ export function QuickActionTile({
       data-testid={`quick-${label.toLowerCase().replace(/\s+/g, "-")}`}
       data-component="quick-action-tile"
       onClick={onClick}
-      className="group flex h-[104px] flex-col items-center justify-center gap-3 rounded-3xl border border-blue-100 bg-white/66 px-3 text-center shadow-soft transition-all duration-200 hover:-translate-y-1 hover:bg-white"
+      className="group flex h-[108px] flex-col items-center justify-center gap-2.5 rounded-3xl border border-blue-100 bg-white/66 px-3 py-3 text-center shadow-soft transition-all duration-200 hover:-translate-y-1 hover:bg-white"
     >
       <IconBubble icon={icon} accent={accent} size="md" />
-      <span className={clsx("text-sm font-extrabold", accent === "green" ? "text-emerald-700" : accent === "purple" ? "text-violet-700" : "text-blue-700")}>
+      <span className={clsx("max-w-full text-[13px] font-extrabold leading-tight", accent === "green" ? "text-emerald-700" : accent === "purple" ? "text-violet-700" : "text-blue-700")}>
         {label}
       </span>
     </button>
@@ -195,12 +250,14 @@ export function ActivityRow({ event }: { event: ActivityEvent }) {
 export function BottomStatusBar({
   recycleBin,
   onRecycleBinChange,
+  lastScanTime,
 }: {
   recycleBin: boolean;
   onRecycleBinChange: (checked: boolean) => void;
+  lastScanTime: string | null;
 }) {
   return (
-    <GlassCard className="mx-auto mt-3 flex min-h-[62px] w-full max-w-[1480px] items-center justify-between px-7 py-3" data-check-overlap="bottom-status">
+    <GlassCard className="mx-auto mt-2 flex min-h-[58px] w-full max-w-none items-center justify-between px-7 py-2.5" data-check-overlap="bottom-status">
       <div className="flex items-center gap-3">
         <IconBubble icon={ShieldCheck} accent="green" size="sm" />
         <div>
@@ -210,7 +267,7 @@ export function BottomStatusBar({
       </div>
       <div className="flex items-center gap-3 text-sm font-semibold text-muted">
         <HeartPulse className="h-5 w-5 text-emerald-600" />
-        Last scan: mock data only
+        Last scan: {lastScanTime ?? "Not scanned yet"}
       </div>
       <div className="flex items-center gap-4 text-sm font-semibold text-muted">
         Move to Recycle Bin when supported

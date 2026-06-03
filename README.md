@@ -1,94 +1,123 @@
 # CleanStart
 
-CleanStart is a safety-first Windows maintenance app. The current public track is
-moving from the legacy PyQt6 MVP to a new Tauri + React + TypeScript + Tailwind
-desktop prototype.
+CleanStart is an open-source, safety-first Windows maintenance app. It is built
+to be transparent and realistic: preview first, explain what will happen, require
+confirmation before cleanup, and avoid fake optimizer or antivirus claims.
+
+The current main app is being developed with Tauri + React + TypeScript +
+Tailwind, with a Rust backend for safety-critical cleanup validation. The older
+PyQt6 MVP is preserved in `legacy-pyqt/` as the v0.1.0 reference.
 
 ## Why CleanStart Exists
 
 Many cleanup tools use aggressive language, unclear deletion rules, or promises
 they cannot honestly prove. CleanStart is built as a safer alternative: preview
 first, explain what is being reviewed, require confirmation before real cleanup,
-and avoid fake optimizer or antivirus claims.
+and avoid fake speed boost, scareware, registry cleaner, RAM booster, malware
+removal, or antivirus claims.
 
 ## Current Version
 
-- `v0.2.0-alpha`: Tauri + React + TypeScript + Tailwind UI prototype.
-- `legacy-pyqt/`: preserved PyQt6 v0.1.0 MVP/reference implementation.
+`v0.2.0-alpha.1` adds a safety-first Temp Cleaner with real preview scan, dry
+run, and selected cleanup through Recycle Bin for approved temporary folders and
+browser cache locations.
 
-The v0.2.0 prototype uses mock data only. It does not run real cleanup, startup
-changes, disk deletion, telemetry, login, analytics, cloud sync, or external
-server calls.
+This is still an alpha release:
 
-## CleanStart v0.2.0-alpha UI prototype
+- Temp Cleaner has real alpha cleanup behavior.
+- Startup Analyzer and Disk Analyzer remain prototype screens.
+- Activity Log and Settings are local/prototype state.
+- Cleanup remains local-first with no login, telemetry, analytics, cloud sync,
+  or external server calls.
 
-CleanStart is being rewritten from the legacy PyQt desktop MVP to a new Tauri +
-React + TypeScript + Tailwind desktop app. The current `v0.2.0-alpha` build is a
-UI prototype that demonstrates the planned desktop experience, navigation,
-Dashboard layout, reusable components, and safety-first product language.
+## Feature Status
 
-![CleanStart v0.2.0-alpha Dashboard](docs/screenshots/cleanstart-v0.2.0-alpha-dashboard.png)
+| Area | Status |
+| --- | --- |
+| Dashboard | Available UI with real navigation and local state. |
+| Temp Cleaner | Real preview scan, dry run, selected cleanup through Recycle Bin, safe temp cleanup, browser cache cleanup for cache folders only. Alpha limitations apply. |
+| Startup Analyzer | Prototype / not fully connected yet. |
+| Disk Analyzer | Prototype / not fully connected yet. |
+| Activity Log | Local/prototype entries. |
+| Settings | Local/prototype settings. |
 
-This Tauri version is not a working cleaner yet. Real cleanup, startup analysis,
-and disk analysis logic are not connected in `v0.2.0-alpha`; the screens use
-mock/demo data so the UI can be reviewed safely before backend integration.
+## Temp Cleaner Targets
 
-The prototype keeps the same safety boundaries as the project:
+CleanStart only scans approved temporary/cache locations:
 
+- `%TEMP%`
+- `%LOCALAPPDATA%\Temp`
+- `C:\Windows\Temp` when accessible
+- Microsoft Edge cache folders only
+- Google Chrome cache folders only
+- Brave cache folders only
+- Firefox cache folders only
+
+Approved root folders are not moved or deleted directly. CleanStart treats them
+as cleanup groups, enumerates safe child files/folders inside them, skips
+symlinks/reparse points/junctions, and moves selected accessible children to
+Recycle Bin when supported.
+
+## Browser Safety
+
+Browser cleanup targets cache only.
+
+CleanStart does not clean:
+
+- cookies
+- passwords
+- history
+- sessions
+- autofill
+- bookmarks
+
+Some browser cache files may stay locked while the browser is running. Close the
+browser and run Preview scan again to clean more cache files.
+
+## Safety Principles
+
+- Preview-first.
+- Explicit confirmation before cleanup.
+- Recycle Bin only.
+- Permanent deletion is disabled.
+- Rust backend validates selected cleanup paths.
+- Personal folders are not targeted.
+- Locked/protected files are skipped and reported.
+- No automatic cleanup.
 - No telemetry.
 - No login or accounts.
 - No cloud sync.
 - No fake optimizer claims.
 - No antivirus or malware-detection claims.
-- No destructive cleanup logic connected yet.
 
-## Features In The v0.2.0 Prototype
+## Known Limitations
 
-- Dashboard with premium light glassmorphism layout.
-- Temp Cleaner screen with category chips, checkbox table, selection summary,
-  and safety note.
-- Startup Analyzer screen with search, read-only advisor table, and status
-  badges.
-- Disk Analyzer screen with storage breakdown mockup, folder scope message, and
-  largest items table.
-- Activity Log screen with filter chips, event list, and local-only messaging.
-- Settings screen with language, privacy, Recycle Bin behavior, and about
-  sections.
-- Real React components for cards, buttons, toggles, tables, search, inspector
-  panels, safety banners, and bottom status.
-
-## Safety Principles
-
-- No automatic scan on app startup.
-- No destructive cleanup logic in the first Tauri prototype.
-- No malware detection or antivirus claims.
-- No fake speed boosts or scareware language.
-- No login, telemetry, analytics, cloud sync, or external servers.
-- Real cleanup must remain preview-first and confirmation-gated when connected
-  later.
+- Locked files may remain.
+- Permission-protected files may be skipped.
+- Some browser cache files may require closing the browser first.
+- Permanent deletion is disabled.
+- Auto cleanup is not implemented.
+- Startup Analyzer and Disk Analyzer are still prototype screens.
+- Browser cleanup targets cache only, not cookies/passwords/history/sessions.
 
 ## Screenshots
 
 Use `docs/screenshots/` for release screenshots and avoid exposing real
-usernames, personal paths, or private files.
+usernames, personal paths, private files, tokens, emails, or account names.
 
-Planned screenshot set:
+![CleanStart v0.2.0-alpha.1 Dashboard](docs/screenshots/cleanstart-v0.2.0-alpha1-dashboard.png)
 
-- Dashboard: `docs/screenshots/cleanstart-v0.2.0-alpha-dashboard.png`
-- Temp Cleaner
-- Startup Analyzer
-- Disk Analyzer
-- Activity Log
-- Settings
+![CleanStart v0.2.0-alpha.1 Temp Cleaner Preview](docs/screenshots/cleanstart-v0.2.0-alpha1-temp-cleaner-preview.png)
+
+![CleanStart v0.2.0-alpha.1 Cleanup Result](docs/screenshots/cleanstart-v0.2.0-alpha1-temp-cleaner-cleanup-result.png)
 
 ## Requirements
 
+- Windows 10/11.
 - Node.js 20+ recommended.
 - npm 10+.
-- Rust/Cargo is required for the full Tauri desktop runtime.
-
-This machine currently has Node/npm available, but Rust/Cargo must be installed
-before `npm run tauri dev` can launch the desktop shell.
+- Rust/Cargo with the Visual Studio C++ build tools for the full Tauri desktop
+  runtime.
 
 ## Install
 
@@ -98,12 +127,12 @@ cd CleanStart
 npm install
 ```
 
-## Run The UI Prototype
+## Run
 
 Desktop development mode:
 
 ```powershell
-npm run dev
+npm run tauri dev
 ```
 
 This opens the CleanStart Tauri desktop window. It may also start a local Vite
@@ -115,12 +144,6 @@ Frontend-only browser preview, only if you explicitly need it:
 npm run dev:web
 ```
 
-Alternative explicit Tauri command:
-
-```powershell
-npm run tauri dev
-```
-
 ## Build
 
 Frontend build:
@@ -129,7 +152,7 @@ Frontend build:
 npm run build
 ```
 
-Tauri desktop build after installing Rust/Cargo:
+Tauri desktop build:
 
 ```powershell
 npm run tauri build
@@ -144,21 +167,28 @@ Windows helper script:
 ## Project Structure
 
 ```text
-src/                 React + TypeScript UI prototype
+src/                 React + TypeScript UI
 src/components/      Reusable app shell and UI components
-src/data/            Mock data for the prototype
-src-tauri/           Tauri v2 desktop shell configuration
-public/assets/       Allowed UI assets: background, hero, app logo
+src/data/            Prototype data for non-connected modules
+src-tauri/           Tauri v2 desktop shell and Rust cleanup backend
+public/assets/       UI assets: background, hero, app logo
 docs/                Screenshot notes and design references
 legacy-pyqt/         Preserved PyQt6 v0.1.0 MVP/reference
 ```
 
+## Legacy PyQt Version
+
+`legacy-pyqt/` contains the old PyQt6 v0.1.0 implementation/reference. The
+current main app is the Tauri/React/Rust version at the repository root.
+
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md). Future backend work should reconnect cleanup,
-startup, and disk logic safely without changing the safety principles above.
+See [ROADMAP.md](ROADMAP.md). Future work should connect Startup Analyzer, Disk
+Analyzer, Activity Log persistence, and settings polish without changing the
+safety-first boundaries above.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). For the Tauri prototype, keep UI
-components real and interactive. Do not replace screens with static screenshots.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Keep UI components real and interactive.
+Do not replace screens with static screenshots, and do not add telemetry, login,
+cloud sync, fake optimizer claims, or antivirus claims.

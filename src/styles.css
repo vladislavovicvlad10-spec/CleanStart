@@ -41,23 +41,12 @@ button:disabled {
 }
 
 .clean-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(59, 130, 246, 0.35) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .clean-scrollbar::-webkit-scrollbar {
-  width: 10px;
-}
-
-.clean-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.clean-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.28);
-  border: 3px solid transparent;
-  border-radius: 999px;
-  background-clip: content-box;
+  display: none;
 }
 
 .hero-art-stage::after {

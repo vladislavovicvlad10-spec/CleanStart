@@ -16,6 +16,17 @@ Recommended screenshot set:
 
 - Dashboard
 - Temp Cleaner preview
-- Startup Analyzer results
-- Disk Analyzer Lite results
-- Activity Log
+- Temp Cleaner cleanup result
+- Startup Analyzer results after backend support is connected
+- Disk Analyzer Lite results after backend support is connected
+- Activity Log after persistence is connected
+
+Current v0.2.0-alpha.1 screenshot files:
+
+- `cleanstart-v0.2.0-alpha1-dashboard.png`
+- `cleanstart-v0.2.0-alpha1-temp-cleaner-preview.png`
+- `cleanstart-v0.2.0-alpha1-temp-cleaner-cleanup-result.png`
+
+For cleanup result screenshots, do not publish expanded failed item details that
+show full personal paths. Collapse the details section or redact the path text
+before using the screenshot in README or a GitHub release.

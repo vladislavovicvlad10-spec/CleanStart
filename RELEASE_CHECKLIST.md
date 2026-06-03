@@ -1,86 +1,118 @@
 # Release Checklist
 
-Use this checklist before publishing CleanStart v0.1.0.
+Use this checklist before publishing CleanStart `v0.2.0-alpha.1`.
 
-## 1. Test Locally
+## 1. Automated Verification
 
-```powershell
-pytest
-black --check .
-python -m compileall core gui utils tests main.py
-```
-
-Run PyQt smoke checks:
+Run from the repository root:
 
 ```powershell
-$env:QT_QPA_PLATFORM='offscreen'
-python -c "from PyQt6.QtWidgets import QApplication; from main import CleanStartWindow, save_language; save_language('en'); app = QApplication([]); window = CleanStartWindow(); assert window.dashboard_temp_value.text() == 'Not scanned yet'; print('launch smoke ok')"
+npm run typecheck
+npm run build
 ```
 
-Run the app:
+Run from `src-tauri/`:
 
 ```powershell
-python main.py
+cargo fmt --check
+cargo test
 ```
+
+Optional Tauri smoke:
+
+```powershell
+npm run tauri dev
+```
+
+Confirm:
+
+- The app opens as a desktop window.
+- Dashboard navigation works.
+- Temp Cleaner opens.
+- No scan starts automatically.
+
+## 2. Temp Cleaner Manual Test
 
 Verify:
 
-- Dashboard shows "Not scanned yet" before user actions.
-- Temp Cleaner previews before cleanup.
-- Cleanup requires confirmation.
-- Startup Analyzer makes no changes.
-- Disk Analyzer scans profile folders or one chosen folder only.
-- Activity Log stays local.
-- Language selector offers English and Russian.
-- Cleanup result dialog keeps the app open after success or failure.
-- Recycle Bin failures are reported and do not fall back to permanent deletion.
+- Preview scan reviews approved locations only.
+- Dry run completes without changing files.
+- Clean selected requires confirmation.
+- Clean selected moves accessible child files/folders to Recycle Bin.
+- Permanent deletion does not happen.
+- Approved root folders are not deleted directly.
+- Browser cache cleanup targets cache folders only.
+- Cookies/passwords/history/sessions/autofill/bookmarks are not cleaned.
+- Locked/protected files are reported instead of hidden.
+- Cleanup result distinguishes completed, completed with warnings, and could not finish.
+- Auto refresh runs after cleanup.
 
-## 2. Prepare Screenshots
+## 3. Screenshot Checklist
 
 Read [docs/screenshots/README.md](docs/screenshots/README.md).
 
 Capture:
 
-- Dashboard
-- Temp Cleaner preview
-- Startup Analyzer results
-- Disk Analyzer Lite results
-- Activity Log
+- `docs/screenshots/cleanstart-v0.2.0-alpha1-dashboard.png`
+- `docs/screenshots/cleanstart-v0.2.0-alpha1-temp-cleaner-preview.png`
+- `docs/screenshots/cleanstart-v0.2.0-alpha1-temp-cleaner-cleanup-result.png`
 
-Do not expose real usernames, personal paths, private files, tokens, or account names.
+Privacy review:
 
-## 3. Privacy Checklist
+- No secrets, tokens, emails, or account names.
+- No private documents or private filenames.
+- No expanded failed item details showing full `C:\Users...` paths.
+- Prefer `%LOCALAPPDATA%`/approved temp labels or non-sensitive demo paths.
+- No browser tabs or unrelated desktop clutter.
+
+## 4. Documentation Checklist
+
+Confirm:
+
+- README is updated for `v0.2.0-alpha.1`.
+- README describes Tauri + React + TypeScript + Tailwind + Rust backend.
+- README clearly states Temp Cleaner is real alpha behavior.
+- README clearly states Startup Analyzer and Disk Analyzer are prototypes.
+- README documents Recycle Bin-only cleanup.
+- README documents browser cache-only cleanup.
+- README documents no telemetry, no login, no cloud sync, and no fake optimizer claims.
+- CHANGELOG has a `v0.2.0-alpha.1` entry.
+- ROADMAP marks completed Temp Cleaner alpha work and keeps future modules scoped.
+- Screenshots are updated.
+
+## 5. Privacy And Safety Checklist
 
 - No telemetry, analytics, login, cloud sync, or external servers.
 - Do not commit `config/settings.json`.
 - Do not commit `logs/` or crash logs.
 - Do not include real usernames, private paths, or personal files in screenshots.
 - Do not package `venv/`, cache folders, local config, logs, or private data.
+- Do not claim full PC cleaning, optimization, antivirus, malware removal, registry cleaning, RAM boosting, FPS boosting, or complete Windows repair.
 
-## 4. Build Windows App
+## 6. Build Windows App
 
 Install dependencies:
 
 ```powershell
-pip install -r requirements.txt
+npm install
 ```
 
-Build folder-based app:
+Build frontend:
+
+```powershell
+npm run build
+```
+
+Build Tauri desktop app:
+
+```powershell
+npm run tauri build
+```
+
+Windows helper script:
 
 ```powershell
 .\scripts\build_windows.ps1
-```
-
-Optional one-file build:
-
-```powershell
-.\scripts\build_windows.ps1 -OneFile
-```
-
-If a real icon is ready, place it at:
-
-```text
-assets/app.ico
 ```
 
 Confirm ignored/generated folders are not staged:
@@ -89,44 +121,26 @@ Confirm ignored/generated folders are not staged:
 git status --short
 ```
 
-## 5. Smoke-Test Build
-
-Run:
-
-```powershell
-.\dist\CleanStart\CleanStart.exe
-```
-
-For one-file builds:
-
-```powershell
-.\dist\CleanStart.exe
-```
-
-Confirm the app opens and no scan starts automatically.
-
-## 6. OpenAI Codex for Open Source Application Checklist
+## 7. GitHub Release Checklist
 
 - Repository is public and has a clear README.
 - License is present and compatible with open-source release.
-- Safety-first scope is explicit: no fake optimizer claims and no antivirus claims.
+- Safety-first scope is explicit.
 - Tests and local verification commands are documented.
 - Release checklist and roadmap are present.
 - Screenshots are privacy-reviewed.
 - No secrets, personal paths, logs, config, virtualenv, or build caches are committed.
+- Suggested repository topics: `windows`, `tauri`, `react`, `typescript`, `rust`, `cleanup`, `maintenance-tool`, `open-source`, `privacy-first`.
 
-## 7. Tag Release
+## 8. Tag Release
 
 ```powershell
-git tag -a v0.1.0 -m "CleanStart v0.1.0"
-git push origin v0.1.0
+git tag -a v0.2.0-alpha.1 -m "CleanStart v0.2.0-alpha.1"
+git push origin v0.2.0-alpha.1
 ```
 
-## 8. Create GitHub Release
+## Legacy v0.1.0 Notes
 
-- Release title: `CleanStart v0.1.0`
-- Attach packaged Windows artifact if available.
-- Include safety notes from README.
-- Include known limitations.
-- Include screenshot set after privacy review.
-- Suggested repository topics: `windows`, `python`, `pyqt6`, `cleanup`, `maintenance-tool`, `open-source`, `privacy-first`.
+The old PyQt6 MVP remains in `legacy-pyqt/` for reference. Do not use the legacy
+PyQt release checklist for the current Tauri alpha unless you are explicitly
+testing the preserved v0.1.0 implementation.

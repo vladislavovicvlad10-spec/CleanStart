@@ -207,7 +207,7 @@ export function SearchInput({
   placeholder: string;
 }) {
   return (
-    <label className="flex h-11 min-w-[280px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/75 px-4 shadow-soft">
+    <label className="flex h-10 min-w-[270px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/75 px-4 shadow-soft">
       <Search className="h-4 w-4 text-slate-500" />
       <input
         value={value}
@@ -230,11 +230,16 @@ export function SafetyBanner({
     <div
       className={clsx(
         "flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/75 text-emerald-800 shadow-soft",
-        compact ? "px-4 py-3 text-sm" : "px-5 py-4",
+        compact ? "px-3 py-2 text-sm" : "px-5 py-4",
       )}
     >
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-emerald-100 text-emerald-700">
-        <Check className="h-5 w-5" />
+      <span
+        className={clsx(
+          "grid shrink-0 place-items-center bg-emerald-100 text-emerald-700",
+          compact ? "h-8 w-8 rounded-xl" : "h-10 w-10 rounded-2xl",
+        )}
+      >
+        <Check className={compact ? "h-4 w-4" : "h-5 w-5"} />
       </span>
       <div>{children}</div>
     </div>
