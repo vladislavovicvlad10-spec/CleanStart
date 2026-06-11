@@ -5,6 +5,12 @@
 /* ---------------------------------------------------------------------------
    CleanStart design tokens
    Dark is the primary theme. Light is fully supported via [data-theme].
+
+   Module identity accents:
+     teal   -> Temp Cleaner   (--c-accent)
+     violet -> Startup Analyzer (--c-violet)
+     amber  -> Disk Analyzer  (--c-warning)
+     slate  -> Activity Log   (--c-edge / muted)
 --------------------------------------------------------------------------- */
 
 :root,
@@ -18,9 +24,19 @@
   --c-edge: 148 163 184;
   --c-accent: 45 212 191;
   --c-accent-strong: 20 184 166;
+  --c-violet: 167 139 250;
+  --c-violet-strong: 139 92 246;
   --c-success: 52 211 153;
   --c-warning: 251 191 36;
   --c-danger: 248 113 113;
+
+  /* Atmosphere — tuned per theme so light mode stays clean. */
+  --bg-glow-a: rgb(45 212 191 / 0.07);
+  --bg-glow-b: rgb(139 92 246 / 0.055);
+  --bg-glow-c: rgb(45 212 191 / 0.03);
+  --noise-opacity: 0.022;
+  --card-topline: rgb(255 255 255 / 0.045);
+
   color-scheme: dark;
 }
 
@@ -34,10 +50,25 @@
   --c-edge: 51 65 85;
   --c-accent: 13 148 136;
   --c-accent-strong: 15 118 110;
+  --c-violet: 124 58 237;
+  --c-violet-strong: 109 40 217;
   --c-success: 5 150 105;
   --c-warning: 180 83 9;
   --c-danger: 220 38 38;
+
+  --bg-glow-a: rgb(13 148 136 / 0.06);
+  --bg-glow-b: rgb(124 58 237 / 0.04);
+  --bg-glow-c: rgb(13 148 136 / 0.025);
+  --noise-opacity: 0.015;
+  --card-topline: rgb(255 255 255 / 0.6);
+
   color-scheme: light;
+}
+
+/* Shared easing vocabulary — stronger than the CSS built-ins. */
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 * {
@@ -54,7 +85,11 @@ body {
   min-width: 1100px;
   min-height: 680px;
   overflow: hidden;
-  background: rgb(var(--c-bg));
+  background:
+    radial-gradient(1100px 540px at 18% -12%, var(--bg-glow-a), transparent 64%),
+    radial-gradient(900px 480px at 86% -8%, var(--bg-glow-b), transparent 62%),
+    radial-gradient(1300px 700px at 50% 118%, var(--bg-glow-c), transparent 60%),
+    rgb(var(--c-bg));
   color: rgb(var(--c-ink));
   font-family:
     "Segoe UI Variable Text",
@@ -67,6 +102,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
+}
+
+/* Fine film-grain texture so the dark base never reads as flat. Fixed and
+   pointer-events-none — never on a scrolling container. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 input,
@@ -94,6 +141,7 @@ button:disabled {
 :focus-visible {
   outline: 2px solid rgb(var(--c-accent) / 0.7);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /* Scrollbars ------------------------------------------------------------- */
@@ -119,6 +167,132 @@ button:disabled {
 
 .clean-scrollbar::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* Top navigation ----------------------------------------------------------- */
+
+/* Each tab owns its underline; it scales in from the center when active.
+   No layout measurement, fully interruptible, 200ms ease-out. */
+.nav-tab-underline {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: rgb(var(--c-accent));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 200ms var(--ease-out-strong);
+}
+
+.nav-tab[data-active="true"] .nav-tab-underline {
+  transform: scaleX(1);
+}
+
+/* Cards ------------------------------------------------------------------- */
+
+/* A 1px light top edge sells the "lit from above" glass read on dark. */
+.card-topline {
+  box-shadow:
+    inset 0 1px 0 var(--card-topline),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 8px 24px -12px rgba(0, 0, 0, 0.35);
+}
+
+/* Dashboard module cards ---------------------------------------------------
+   Hover lifts the card and casts a glow in the module's own accent. The
+   inset top-light is part of every state so the edge never flickers. */
+
+.module-card {
+  box-shadow:
+    inset 0 1px 0 var(--card-topline),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 8px 24px -12px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 180ms var(--ease-out-strong),
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .module-card:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
+
+  .module-card[data-tone="accent"]:hover {
+    border-color: rgb(var(--c-accent) / 0.35);
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 14px 36px -14px rgb(var(--c-accent) / 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .module-card[data-tone="violet"]:hover {
+    border-color: rgb(var(--c-violet) / 0.35);
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 14px 36px -14px rgb(var(--c-violet) / 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .module-card[data-tone="warning"]:hover {
+    border-color: rgb(var(--c-warning) / 0.35);
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 14px 36px -14px rgb(var(--c-warning) / 0.32),
+      0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .module-card[data-tone="neutral"]:hover {
+    border-color: rgb(var(--c-edge) / 0.35);
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 14px 36px -14px rgb(var(--c-edge) / 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.module-card:active {
+  transform: translateY(0) scale(0.995);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .module-card,
+  .module-card:hover,
+  .module-card:active {
+    transform: none;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+  }
+}
+
+/* Hero orb ---------------------------------------------------------------- */
+
+@keyframes orb-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0) scale(1.025);
+  }
+}
+
+@keyframes orb-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orb-float {
+  animation: orb-drift 7s ease-in-out infinite;
+}
+
+.orb-ring {
+  animation: orb-ring-spin 28s linear infinite;
 }
 
 /* Motion ------------------------------------------------------------------ */
@@ -175,7 +349,7 @@ button:disabled {
 }
 
 .animate-rise {
-  animation: rise 0.35s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: rise 0.35s var(--ease-out-strong) both;
 }
 
 .animate-fade {
@@ -183,11 +357,11 @@ button:disabled {
 }
 
 .animate-pop {
-  animation: pop 0.25s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: pop 0.25s var(--ease-out-strong) both;
 }
 
 .animate-toast {
-  animation: toast-in 0.28s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: toast-in 0.28s var(--ease-out-strong) both;
 }
 
 .progress-indeterminate {
@@ -214,8 +388,13 @@ button:disabled {
   .animate-rise,
   .animate-fade,
   .animate-pop,
-  .animate-toast {
+  .animate-toast,
+  .orb-float,
+  .orb-ring {
     animation: none;
+  }
+  .nav-tab-underline {
+    transition: none;
   }
   .progress-indeterminate::after {
     animation-duration: 3s;
@@ -225,5 +404,5 @@ button:disabled {
 /* Bar growth for disk analyzer ------------------------------------------- */
 
 .bar-grow {
-  transition: width 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+  transition: width 0.6s var(--ease-out-strong);
 }

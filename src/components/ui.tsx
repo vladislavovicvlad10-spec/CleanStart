@@ -3,10 +3,11 @@ import type { LucideIcon } from "lucide-react";
 import { Check, Loader2, Search, X } from "lucide-react";
 import { useEffect, type HTMLAttributes, type ReactNode } from "react";
 
-export type Tone = "accent" | "success" | "warning" | "danger" | "neutral";
+export type Tone = "accent" | "violet" | "success" | "warning" | "danger" | "neutral";
 
 const toneText: Record<Tone, string> = {
   accent: "text-accent",
+  violet: "text-violet",
   success: "text-success",
   warning: "text-warning",
   danger: "text-danger",
@@ -15,6 +16,7 @@ const toneText: Record<Tone, string> = {
 
 const toneSoftBg: Record<Tone, string> = {
   accent: "bg-accent/10 ring-accent/20",
+  violet: "bg-violet/10 ring-violet/20",
   success: "bg-success/10 ring-success/20",
   warning: "bg-warning/10 ring-warning/20",
   danger: "bg-danger/10 ring-danger/20",
@@ -32,7 +34,7 @@ export function Card({
     <section
       {...props}
       className={clsx(
-        "rounded-2xl border border-edge/10 bg-surface shadow-card",
+        "card-topline rounded-2xl border border-edge/10 bg-surface",
         className,
       )}
     >
