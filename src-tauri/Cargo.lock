@@ -467,14 +467,16 @@ dependencies = [
 
 [[package]]
 name = "cleanstart"
-version = "0.2.0"
+version = "1.0.0"
 dependencies = [
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-opener",
+ "thiserror 2.0.18",
  "windows-sys 0.59.0",
+ "winreg",
 ]
 
 [[package]]

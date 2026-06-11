@@ -18,28 +18,27 @@ removal, or antivirus claims.
 
 ## Current Version
 
-`v0.2.0-alpha.1` adds a safety-first Temp Cleaner with real preview scan, dry
-run, and selected cleanup through Recycle Bin for approved temporary folders and
-browser cache locations.
+`v1.0.0` is the first complete release. Every module is real and connected:
 
-This is still an alpha release:
-
-- Temp Cleaner has real alpha cleanup behavior.
-- Startup Analyzer and Disk Analyzer remain prototype screens.
-- Activity Log and Settings are local/prototype state.
-- Cleanup remains local-first with no login, telemetry, analytics, cloud sync,
-  or external server calls.
+- Temp Cleaner with preview scan, dry run, and Recycle Bin cleanup.
+- Startup Analyzer with real registry/Startup-folder entries and reversible
+  enable/disable (the Task Manager `StartupApproved` mechanism — never deletes).
+- Disk Analyzer with strictly read-only profile-folder usage and largest files.
+- Persistent local Activity Log (JSON in `%LOCALAPPDATA%\CleanStart`).
+- Real Settings: dark/light theme, launch with Windows, approved scan locations.
+- Local-first with no login, telemetry, analytics, cloud sync, or external
+  server calls.
 
 ## Feature Status
 
 | Area | Status |
 | --- | --- |
-| Dashboard | Available UI with real navigation and local state. |
-| Temp Cleaner | Real preview scan, dry run, selected cleanup through Recycle Bin, safe temp cleanup, browser cache cleanup for cache folders only. Alpha limitations apply. |
-| Startup Analyzer | Prototype / not fully connected yet. |
-| Disk Analyzer | Prototype / not fully connected yet. |
-| Activity Log | Local/prototype entries. |
-| Settings | Local/prototype settings. |
+| Dashboard | Real stats from local history: space reclaimed, last cleanup/scan, recent activity. |
+| Temp Cleaner | Real preview scan, dry run, selected cleanup through Recycle Bin, browser cache cleanup for cache folders only. |
+| Startup Analyzer | Real entries from Run keys and Startup folders. Reversible enable/disable for current-user entries; machine-wide entries shown read-only. |
+| Disk Analyzer | Real read-only scan of profile folders with usage bars, largest files, and drive stats. No deletion possible from this screen. |
+| Activity Log | Persistent local JSON history (capped at 500 events) with filters, copy, and clear. |
+| Settings | Real settings: theme, launch at startup, approved scan locations, safety principles. |
 
 ## Temp Cleaner Targets
 
@@ -90,6 +89,16 @@ browser and run Preview scan again to clean more cache files.
 - No fake optimizer claims.
 - No antivirus or malware-detection claims.
 
+## Startup Analyzer Safety
+
+- Entries are read from `HKCU/HKLM ...\CurrentVersion\Run` (including
+  WOW6432Node) and the user/common Startup folders.
+- Disable/enable writes the same reversible `StartupApproved` registry state
+  that Windows Task Manager uses. The original Run value or shortcut is never
+  deleted, so every change can be undone from CleanStart or Task Manager.
+- Machine-wide (HKLM / common folder) entries are read-only because changing
+  them requires administrator rights.
+
 ## Known Limitations
 
 - Locked files may remain.
@@ -97,13 +106,20 @@ browser and run Preview scan again to clean more cache files.
 - Some browser cache files may require closing the browser first.
 - Permanent deletion is disabled.
 - Auto cleanup is not implemented.
-- Startup Analyzer and Disk Analyzer are still prototype screens.
 - Browser cleanup targets cache only, not cookies/passwords/history/sessions.
+- Disk Analyzer applies depth/time/file-count limits, so very large profiles are
+  reported as a partial (but safe) snapshot.
 
 ## Screenshots
 
 Use `docs/screenshots/` for release screenshots and avoid exposing real
 usernames, personal paths, private files, tokens, emails, or account names.
+
+![CleanStart v1.0.0 Dashboard](docs/screenshots/cleanstart-v1.0.0-dashboard.png)
+
+![CleanStart v1.0.0 Temp Cleaner](docs/screenshots/cleanstart-v1.0.0-temp-cleaner.png)
+
+![CleanStart v1.0.0 Settings (light theme)](docs/screenshots/cleanstart-v1.0.0-settings-light.png)
 
 ![CleanStart v0.2.0-alpha.1 Dashboard](docs/screenshots/cleanstart-v0.2.0-alpha1-dashboard.png)
 
@@ -168,10 +184,12 @@ Windows helper script:
 
 ```text
 src/                 React + TypeScript UI
-src/components/      Reusable app shell and UI components
-src/data/            Prototype data for non-connected modules
-src-tauri/           Tauri v2 desktop shell and Rust cleanup backend
-public/assets/       UI assets: background, hero, app logo
+src/screens/         One file per screen (Dashboard, Temp Cleaner, ...)
+src/components/      App shell (sidebar, title bar) and the UI kit
+src/lib/             Typed IPC client, shared types, formatting helpers
+src/state/           Settings and toast providers
+src-tauri/src/       Rust backend modules:
+                     cleanup, startup, disk, history, settings, error, util
 docs/                Screenshot notes and design references
 legacy-pyqt/         Preserved PyQt6 v0.1.0 MVP/reference
 ```
@@ -183,9 +201,9 @@ current main app is the Tauri/React/Rust version at the repository root.
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md). Future work should connect Startup Analyzer, Disk
-Analyzer, Activity Log persistence, and settings polish without changing the
-safety-first boundaries above.
+See [ROADMAP.md](ROADMAP.md). The v1.0.0 milestone (Startup Analyzer, Disk
+Analyzer, Activity Log persistence, real settings, UI redesign) is complete.
+Future work must not change the safety-first boundaries above.
 
 ## Contributing
 

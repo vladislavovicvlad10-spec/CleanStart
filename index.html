@@ -1,9 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CleanStart</title>
+    <script>
+      // Apply the stored theme before paint to avoid a flash.
+      try {
+        var theme = window.localStorage.getItem("cleanstart.theme");
+        if (theme === "light" || theme === "dark") {
+          document.documentElement.dataset.theme = theme;
+        }
+      } catch (error) {
+        /* default dark theme stays */
+      }
+    </script>
+    <style>
+      html {
+        background: #090c10;
+      }
+      html[data-theme="light"] {
+        background: #f2f5f9;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "CleanStart",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "identifier": "com.cleanstart.desktop",
   "build": {
     "beforeDevCommand": "npm run dev:web",
@@ -12,13 +12,14 @@
   "app": {
     "windows": [
       {
-        "title": "CleanStart v0.2.0",
+        "title": "CleanStart",
         "width": 1440,
         "height": 900,
-        "minWidth": 1200,
-        "minHeight": 720,
+        "minWidth": 1100,
+        "minHeight": 680,
         "resizable": true,
-        "decorations": false
+        "decorations": false,
+        "backgroundColor": "#090c10"
       }
     ]
   },

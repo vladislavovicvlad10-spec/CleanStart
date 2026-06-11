@@ -4,23 +4,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#081742",
-        muted: "#526484",
-        line: "rgba(114, 153, 203, 0.24)",
-        glass: "rgba(255, 255, 255, 0.76)",
-        primary: "#0f73ff",
-        success: "#0f9d58",
-        warning: "#f97316",
+        app: "rgb(var(--c-bg) / <alpha-value>)",
+        surface: {
+          DEFAULT: "rgb(var(--c-surface) / <alpha-value>)",
+          2: "rgb(var(--c-surface2) / <alpha-value>)",
+          3: "rgb(var(--c-surface3) / <alpha-value>)",
+        },
+        ink: "rgb(var(--c-ink) / <alpha-value>)",
+        muted: "rgb(var(--c-muted) / <alpha-value>)",
+        edge: "rgb(var(--c-edge) / <alpha-value>)",
+        accent: {
+          DEFAULT: "rgb(var(--c-accent) / <alpha-value>)",
+          strong: "rgb(var(--c-accent-strong) / <alpha-value>)",
+        },
+        success: "rgb(var(--c-success) / <alpha-value>)",
+        warning: "rgb(var(--c-warning) / <alpha-value>)",
+        danger: "rgb(var(--c-danger) / <alpha-value>)",
       },
       boxShadow: {
-        glass: "0 20px 60px rgba(39, 83, 136, 0.16)",
-        soft: "0 12px 32px rgba(40, 84, 130, 0.12)",
+        card: "0 1px 2px rgba(0,0,0,0.25), 0 8px 24px -12px rgba(0,0,0,0.35)",
+        pop: "0 24px 64px -16px rgba(0,0,0,0.55)",
+        glow: "0 0 0 1px rgb(var(--c-accent) / 0.25), 0 8px 32px -8px rgb(var(--c-accent) / 0.35)",
       },
       borderRadius: {
-        glass: "26px",
+        xl2: "14px",
       },
       fontFamily: {
-        sans: ["Inter", "Segoe UI", "system-ui", "sans-serif"],
+        sans: [
+          "Segoe UI Variable Text",
+          "Segoe UI",
+          "Inter",
+          "system-ui",
+          "sans-serif",
+        ],
+        mono: ["Cascadia Mono", "Consolas", "ui-monospace", "monospace"],
       },
     },
   },

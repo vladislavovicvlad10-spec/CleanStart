@@ -1,5 +1,52 @@
 # Changelog
 
+## v1.0.0 - 2026-06-11
+
+CleanStart 1.0 — every module is now real, connected, and safety-bounded.
+
+### Added
+
+- **Startup Analyzer (real):** reads actual Windows startup entries from
+  `HKCU/HKLM ...\CurrentVersion\Run` (including WOW6432Node) and the user/common
+  Startup folders. Enable/disable uses the same reversible `StartupApproved`
+  mechanism as Task Manager — entries are toggled, never deleted. Machine-wide
+  entries are shown read-only (admin rights would be required).
+- **Disk Analyzer (real):** strictly read-only scan of user-profile folders with
+  per-folder usage bars, largest-files list, drive used/free stats, and hard
+  scan limits (depth/time/file count). No deletion code exists in this module.
+- **Persistent Activity Log:** scans and cleanups are recorded to a local JSON
+  file (`%LOCALAPPDATA%\CleanStart\activity-log.json`, capped at 500 entries)
+  with day grouping, filters, copy-to-clipboard, and confirm-to-clear.
+- **Real Settings:** dark/light theme (dark-first), "start CleanStart with
+  Windows" (current-user registry entry), read-only list of approved cleanup
+  locations served by the backend, and safety principles.
+- Dashboard now shows real data: total space reclaimed, last cleanup, last scan,
+  and recent activity from the persistent history.
+- Toast notification system, modal system, and subtle motion (rise/pop/shimmer)
+  with `prefers-reduced-motion` support.
+
+### Changed
+
+- **Complete UI redesign:** dark-first premium theme with teal accent, sidebar
+  navigation, custom title bar, status bar with permanent safety messaging, and
+  a full light theme. Tokens are CSS variables consumed by Tailwind.
+- **Rust backend restructured** into modules (`cleanup`, `startup`, `disk`,
+  `history`, `settings`, `error`, `util`) with a unified `thiserror`-based
+  `AppError` type so every IPC command returns readable errors.
+- Settings storage migrated to a richer `settings.json` (theme, launch at
+  startup); the legacy `moveToRecycleBin`-only file still parses.
+- Frontend restructured: `src/screens/`, `src/components/`, `src/lib/` (typed
+  IPC client + shared types), `src/state/` (settings/toast providers). All mock
+  data removed.
+
+### Safety
+
+- Permanent deletion remains disabled; the Recycle Bin toggle was removed from
+  the UI and the backend now forces `moveToRecycleBin = true` when saving.
+- Startup changes are reversible by design and never delete the original entry.
+- Disk Analyzer cannot delete anything — it has no destructive commands.
+- Activity history and settings are local-only; no telemetry, login, or cloud.
+
 ## v0.2.0-alpha.1 - 2026-06-03
 
 ### Added

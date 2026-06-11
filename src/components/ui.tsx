@@ -1,47 +1,38 @@
 import clsx from "clsx";
 import type { LucideIcon } from "lucide-react";
-import { Check, Search } from "lucide-react";
-import type { HTMLAttributes, ReactNode } from "react";
-import type { Accent } from "../types/app";
+import { Check, Loader2, Search, X } from "lucide-react";
+import { useEffect, type HTMLAttributes, type ReactNode } from "react";
 
-const accentText: Record<Accent, string> = {
-  blue: "text-blue-600",
-  purple: "text-violet-600",
-  orange: "text-orange-500",
-  green: "text-emerald-600",
-  slate: "text-slate-600",
+export type Tone = "accent" | "success" | "warning" | "danger" | "neutral";
+
+const toneText: Record<Tone, string> = {
+  accent: "text-accent",
+  success: "text-success",
+  warning: "text-warning",
+  danger: "text-danger",
+  neutral: "text-muted",
 };
 
-const accentBg: Record<Accent, string> = {
-  blue: "from-blue-50 to-sky-100",
-  purple: "from-violet-50 to-purple-100",
-  orange: "from-orange-50 to-amber-100",
-  green: "from-emerald-50 to-green-100",
-  slate: "from-slate-50 to-blue-50",
+const toneSoftBg: Record<Tone, string> = {
+  accent: "bg-accent/10 ring-accent/20",
+  success: "bg-success/10 ring-success/20",
+  warning: "bg-warning/10 ring-warning/20",
+  danger: "bg-danger/10 ring-danger/20",
+  neutral: "bg-edge/10 ring-edge/15",
 };
 
-const buttonBg: Record<Accent, string> = {
-  blue: "from-blue-500 to-blue-700 hover:from-blue-500 hover:to-blue-600",
-  purple: "from-violet-500 to-purple-700 hover:from-violet-500 hover:to-purple-600",
-  orange: "from-orange-400 to-orange-600 hover:from-orange-400 hover:to-orange-500",
-  green: "from-emerald-400 to-teal-600 hover:from-emerald-400 hover:to-teal-500",
-  slate: "from-slate-500 to-slate-700 hover:from-slate-500 hover:to-slate-600",
-};
+/* Card --------------------------------------------------------------------- */
 
-export function GlassCard({
+export function Card({
   children,
   className,
   ...props
-}: {
-  children: ReactNode;
-  className?: string;
-} & HTMLAttributes<HTMLElement>) {
+}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLElement>) {
   return (
     <section
       {...props}
       className={clsx(
-        "rounded-glass border border-white/70 bg-white/70 shadow-glass backdrop-blur-xl",
-        "ring-1 ring-blue-100/70",
+        "rounded-2xl border border-edge/10 bg-surface shadow-card",
         className,
       )}
     >
@@ -50,101 +41,129 @@ export function GlassCard({
   );
 }
 
-export function IconBubble({
-  icon: Icon,
-  accent = "blue",
-  size = "md",
-}: {
-  icon: LucideIcon;
-  accent?: Accent;
-  size?: "sm" | "md" | "lg";
-}) {
-  return (
-    <span
-      className={clsx(
-        "grid shrink-0 place-items-center rounded-2xl bg-gradient-to-br shadow-soft",
-        accentBg[accent],
-        size === "sm" && "h-10 w-10",
-        size === "md" && "h-12 w-12",
-        size === "lg" && "h-16 w-16",
-      )}
-    >
-      <Icon className={clsx(size === "lg" ? "h-8 w-8" : "h-6 w-6", accentText[accent])} />
-    </span>
-  );
-}
+/* Buttons ------------------------------------------------------------------ */
 
 export function Button({
   children,
-  accent = "blue",
   variant = "primary",
+  size = "md",
+  icon: Icon,
   onClick,
   disabled,
+  busy,
   className,
+  title,
 }: {
   children: ReactNode;
-  accent?: Accent;
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
+  icon?: LucideIcon;
   onClick?: () => void;
   disabled?: boolean;
+  busy?: boolean;
   className?: string;
+  title?: string;
 }) {
-  const base =
-    "inline-flex h-11 items-center justify-center rounded-2xl px-5 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300";
-  if (variant === "secondary") {
-    return (
-      <button
-        className={clsx(
-          base,
-          "border border-blue-100 bg-white/80 text-blue-700 shadow-soft hover:bg-blue-50",
-          className,
-        )}
-        disabled={disabled}
-        onClick={onClick}
-      >
-        {children}
-      </button>
-    );
-  }
-  if (variant === "danger") {
-    return (
-      <button
-        className={clsx(
-          base,
-          "bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-soft hover:from-rose-500 hover:to-red-500 disabled:opacity-50",
-          className,
-        )}
-        disabled={disabled}
-        onClick={onClick}
-      >
-        {children}
-      </button>
-    );
-  }
   return (
     <button
+      onClick={onClick}
+      disabled={disabled || busy}
+      title={title}
       className={clsx(
-        base,
-        "bg-gradient-to-r text-white shadow-soft hover:-translate-y-0.5 disabled:opacity-50",
-        buttonBg[accent],
+        "inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150",
+        "disabled:opacity-45 disabled:saturate-50",
+        size === "sm" && "h-8 px-3 text-xs",
+        size === "md" && "h-9 px-4 text-sm",
+        size === "lg" && "h-11 px-5 text-sm",
+        variant === "primary" &&
+          "bg-accent-strong text-white hover:bg-accent hover:text-slate-900 active:scale-[0.98]",
+        variant === "secondary" &&
+          "border border-edge/20 bg-surface-2 text-ink hover:border-edge/35 hover:bg-surface-3 active:scale-[0.98]",
+        variant === "ghost" &&
+          "text-muted hover:bg-edge/10 hover:text-ink active:scale-[0.98]",
+        variant === "danger" &&
+          "bg-danger/15 text-danger ring-1 ring-danger/30 hover:bg-danger/25 active:scale-[0.98]",
         className,
       )}
-      disabled={disabled}
-      onClick={onClick}
     >
+      {busy ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        Icon && <Icon className="h-4 w-4" />
+      )}
       {children}
     </button>
   );
 }
 
+/* Icon container ------------------------------------------------------------ */
+
+export function IconBox({
+  icon: Icon,
+  tone = "accent",
+  size = "md",
+}: {
+  icon: LucideIcon;
+  tone?: Tone;
+  size?: "sm" | "md" | "lg";
+}) {
+  return (
+    <span
+      className={clsx(
+        "grid shrink-0 place-items-center rounded-xl ring-1",
+        toneSoftBg[tone],
+        size === "sm" && "h-8 w-8",
+        size === "md" && "h-10 w-10",
+        size === "lg" && "h-12 w-12",
+      )}
+    >
+      <Icon
+        className={clsx(
+          toneText[tone],
+          size === "sm" ? "h-4 w-4" : size === "md" ? "h-5 w-5" : "h-6 w-6",
+        )}
+      />
+    </span>
+  );
+}
+
+/* Pills / badges ------------------------------------------------------------- */
+
+export function Pill({
+  children,
+  tone = "neutral",
+  className,
+}: {
+  children: ReactNode;
+  tone?: Tone;
+  className?: string;
+}) {
+  return (
+    <span
+      className={clsx(
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1",
+        toneSoftBg[tone],
+        toneText[tone],
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+/* Toggle ---------------------------------------------------------------------- */
+
 export function Toggle({
   checked,
   onChange,
+  disabled = false,
   label,
   testId,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
+  disabled?: boolean;
   label?: string;
   testId?: string;
 }) {
@@ -155,128 +174,328 @@ export function Toggle({
       data-testid={testId}
       aria-checked={checked}
       aria-label={label ?? "Toggle setting"}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
       className={clsx(
-        "relative h-9 w-[66px] rounded-full border p-1 transition-all duration-200",
-        checked
-          ? "border-blue-400 bg-gradient-to-r from-blue-500 to-blue-700"
-          : "border-slate-200 bg-slate-300",
+        "relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200",
+        checked ? "bg-accent-strong" : "bg-edge/25",
+        disabled && "opacity-40",
       )}
     >
       <span
         className={clsx(
-          "block h-7 w-7 rounded-full bg-white shadow-md transition-transform duration-200",
-          checked ? "translate-x-7" : "translate-x-0",
+          "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
+          checked ? "left-[22px]" : "left-0.5",
         )}
       />
     </button>
   );
 }
 
-export function StatusBadge({
-  label,
-  tone = "blue",
+/* Checkbox ---------------------------------------------------------------------- */
+
+export function Checkbox({
+  checked,
+  mixed = false,
+  disabled = false,
+  ariaLabel,
+  onChange,
 }: {
-  label: string;
-  tone?: Accent;
+  checked: boolean;
+  mixed?: boolean;
+  disabled?: boolean;
+  ariaLabel: string;
+  onChange: (checked: boolean) => void;
 }) {
+  const active = checked || mixed;
   return (
-    <span
+    <label
       className={clsx(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold",
-        tone === "green" && "border-emerald-200 bg-emerald-50 text-emerald-700",
-        tone === "orange" && "border-orange-200 bg-orange-50 text-orange-700",
-        tone === "purple" && "border-violet-200 bg-violet-50 text-violet-700",
-        tone === "blue" && "border-blue-200 bg-blue-50 text-blue-700",
-        tone === "slate" && "border-slate-200 bg-slate-50 text-slate-700",
+        "relative grid h-[18px] w-[18px] place-items-center",
+        disabled ? "cursor-not-allowed" : "cursor-pointer",
       )}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {label}
-    </span>
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.checked)}
+        className="absolute inset-0 z-10 h-full w-full opacity-0"
+        aria-label={ariaLabel}
+      />
+      <span
+        aria-hidden="true"
+        className={clsx(
+          "pointer-events-none grid h-[18px] w-[18px] place-items-center rounded-[5px] border transition-all duration-150",
+          active
+            ? "border-accent-strong bg-accent-strong text-slate-950"
+            : "border-edge/30 bg-surface-2",
+          disabled && "opacity-35",
+        )}
+      >
+        {checked ? (
+          <Check className="h-3 w-3 stroke-[3.5]" />
+        ) : mixed ? (
+          <span className="h-0.5 w-2 rounded-full bg-slate-950" />
+        ) : null}
+      </span>
+    </label>
   );
 }
+
+/* Search ------------------------------------------------------------------------- */
 
 export function SearchInput({
   value,
   onChange,
   placeholder,
+  className,
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
+  className?: string;
 }) {
   return (
-    <label className="flex h-10 min-w-[270px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/75 px-4 shadow-soft">
-      <Search className="h-4 w-4 text-slate-500" />
+    <label
+      className={clsx(
+        "flex h-9 items-center gap-2 rounded-lg border border-edge/15 bg-surface-2 px-3 transition-colors focus-within:border-accent/50",
+        className,
+      )}
+    >
+      <Search className="h-4 w-4 shrink-0 text-muted" />
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-slate-400"
+        className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted/70"
       />
+      {value && (
+        <button
+          aria-label="Clear search"
+          onClick={() => onChange("")}
+          className="grid h-5 w-5 shrink-0 place-items-center rounded text-muted hover:text-ink"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
     </label>
   );
 }
 
-export function SafetyBanner({
-  children,
-  compact = false,
+/* Filter chip ----------------------------------------------------------------------- */
+
+export function FilterChip({
+  label,
+  active,
+  onClick,
+  count,
 }: {
-  children: ReactNode;
-  compact?: boolean;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  count?: number;
 }) {
   return (
-    <div
+    <button
+      onClick={onClick}
       className={clsx(
-        "flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/75 text-emerald-800 shadow-soft",
-        compact ? "px-3 py-2 text-sm" : "px-5 py-4",
+        "inline-flex h-8 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold transition-all duration-150",
+        active
+          ? "bg-accent/15 text-accent ring-1 ring-accent/30"
+          : "text-muted hover:bg-edge/10 hover:text-ink",
       )}
     >
-      <span
+      {label}
+      {count !== undefined && (
+        <span className={clsx("text-[10px]", active ? "text-accent/80" : "text-muted/70")}>
+          {count}
+        </span>
+      )}
+    </button>
+  );
+}
+
+/* Stat tile --------------------------------------------------------------------------- */
+
+export function StatTile({
+  icon,
+  label,
+  value,
+  sub,
+  tone = "accent",
+  delay = 0,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  sub?: string;
+  tone?: Tone;
+  delay?: number;
+}) {
+  return (
+    <Card
+      className="animate-rise flex items-center gap-3.5 p-4"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <IconBox icon={icon} tone={tone} size="md" />
+      <div className="min-w-0">
+        <div className="truncate text-xl font-bold tracking-tight text-ink">{value}</div>
+        <div className="mt-0.5 truncate text-xs font-medium text-muted">
+          {label}
+          {sub && <span className="text-muted/60"> · {sub}</span>}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/* Modal ------------------------------------------------------------------------------ */
+
+export function Modal({
+  title,
+  subtitle,
+  icon,
+  tone = "accent",
+  onClose,
+  children,
+  footer,
+  wide = false,
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: LucideIcon;
+  tone?: Tone;
+  onClose: () => void;
+  children?: ReactNode;
+  footer?: ReactNode;
+  wide?: boolean;
+}) {
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      className="animate-fade fixed inset-0 z-[70] grid place-items-center bg-black/55 px-6 backdrop-blur-[2px]"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
         className={clsx(
-          "grid shrink-0 place-items-center bg-emerald-100 text-emerald-700",
-          compact ? "h-8 w-8 rounded-xl" : "h-10 w-10 rounded-2xl",
+          "animate-pop w-full rounded-2xl border border-edge/15 bg-surface p-5 shadow-pop",
+          wide ? "max-w-[640px]" : "max-w-[480px]",
         )}
       >
-        <Check className={compact ? "h-4 w-4" : "h-5 w-5"} />
-      </span>
-      <div>{children}</div>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            {icon && <IconBox icon={icon} tone={tone} size="md" />}
+            <div>
+              <h2 className="text-lg font-bold tracking-tight text-ink">{title}</h2>
+              {subtitle && <p className="mt-1 text-sm leading-5 text-muted">{subtitle}</p>}
+            </div>
+          </div>
+          <button
+            aria-label="Close dialog"
+            onClick={onClose}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted transition hover:bg-edge/10 hover:text-ink"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        {children && <div className="mt-4">{children}</div>}
+        {footer && <div className="mt-5 flex justify-end gap-2.5">{footer}</div>}
+      </div>
     </div>
   );
 }
 
-export function Table({
-  headers,
-  rows,
+/* Empty state ---------------------------------------------------------------------------- */
+
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
 }: {
-  headers: string[];
-  rows: ReactNode[][];
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  action?: ReactNode;
+}) {
+  const Icon = icon;
+  return (
+    <div className="grid min-h-[280px] place-items-center px-6 py-12 text-center">
+      <div className="animate-rise">
+        <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-accent/10 ring-1 ring-accent/20">
+          <Icon className="h-7 w-7 text-accent" />
+        </span>
+        <h3 className="mt-4 text-base font-bold text-ink">{title}</h3>
+        <p className="mx-auto mt-1.5 max-w-sm text-sm leading-5 text-muted">{description}</p>
+        {action && <div className="mt-5 flex justify-center">{action}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* Progress ----------------------------------------------------------------------------- */
+
+export function ProgressBar({
+  value,
+  indeterminate = false,
+  className,
+}: {
+  value?: number;
+  indeterminate?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-blue-100 bg-white/65">
-      <table className="w-full border-collapse text-left text-sm">
-        <thead className="bg-blue-50/80 text-xs uppercase tracking-wide text-slate-500">
-          <tr>
-            {headers.map((header) => (
-              <th key={header} className="px-4 py-3 font-semibold">
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-blue-100/80 text-slate-700">
-          {rows.map((row, rowIndex) => (
-            <tr key={rowIndex} className="transition-colors hover:bg-blue-50/45">
-              {row.map((cell, cellIndex) => (
-                <td key={cellIndex} className="px-4 py-3 align-middle">
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div
+      className={clsx(
+        "h-1.5 w-full overflow-hidden rounded-full bg-edge/15",
+        indeterminate && "progress-indeterminate",
+        className,
+      )}
+    >
+      {!indeterminate && (
+        <div
+          className="bar-grow h-full rounded-full bg-accent"
+          style={{ width: `${Math.min(Math.max(value ?? 0, 0), 100)}%` }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* Inline notice ---------------------------------------------------------------------------- */
+
+export function Notice({
+  tone = "accent",
+  children,
+  className,
+}: {
+  tone?: Tone;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={clsx(
+        "rounded-xl px-3.5 py-2.5 text-[13px] font-medium leading-5 ring-1",
+        toneSoftBg[tone],
+        tone === "neutral" ? "text-muted" : toneText[tone],
+        className,
+      )}
+    >
+      {children}
     </div>
   );
 }

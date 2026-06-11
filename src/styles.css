@@ -2,29 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color: #081742;
-  background: #edf6ff;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ---------------------------------------------------------------------------
+   CleanStart design tokens
+   Dark is the primary theme. Light is fully supported via [data-theme].
+--------------------------------------------------------------------------- */
+
+:root,
+:root[data-theme="dark"] {
+  --c-bg: 9 12 16;
+  --c-surface: 17 22 29;
+  --c-surface2: 23 30 39;
+  --c-surface3: 31 40 52;
+  --c-ink: 231 237 244;
+  --c-muted: 139 152 169;
+  --c-edge: 148 163 184;
+  --c-accent: 45 212 191;
+  --c-accent-strong: 20 184 166;
+  --c-success: 52 211 153;
+  --c-warning: 251 191 36;
+  --c-danger: 248 113 113;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --c-bg: 242 245 249;
+  --c-surface: 255 255 255;
+  --c-surface2: 244 247 250;
+  --c-surface3: 233 238 244;
+  --c-ink: 16 24 40;
+  --c-muted: 84 100 124;
+  --c-edge: 51 65 85;
+  --c-accent: 13 148 136;
+  --c-accent-strong: 15 118 110;
+  --c-success: 5 150 105;
+  --c-warning: 180 83 9;
+  --c-danger: 220 38 38;
+  color-scheme: light;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  min-width: 1200px;
-  min-height: 720px;
+  min-width: 1100px;
+  min-height: 680px;
   overflow: hidden;
+  background: rgb(var(--c-bg));
+  color: rgb(var(--c-ink));
   font-family:
-    Inter,
+    "Segoe UI Variable Text",
     "Segoe UI",
+    Inter,
     system-ui,
     sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
 }
 
 button,
@@ -40,44 +87,143 @@ button:disabled {
   cursor: not-allowed;
 }
 
+::selection {
+  background: rgb(var(--c-accent) / 0.3);
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--c-accent) / 0.7);
+  outline-offset: 2px;
+}
+
+/* Scrollbars ------------------------------------------------------------- */
+
 .clean-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--c-edge) / 0.25) transparent;
 }
 
 .clean-scrollbar::-webkit-scrollbar {
-  display: none;
+  width: 8px;
+  height: 8px;
 }
 
-.hero-art-stage::after {
+.clean-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-edge) / 0.25);
+  border-radius: 999px;
+}
+
+.clean-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-edge) / 0.4);
+}
+
+.clean-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Motion ------------------------------------------------------------------ */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.35s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.animate-fade {
+  animation: fade 0.2s ease-out both;
+}
+
+.animate-pop {
+  animation: pop 0.25s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.animate-toast {
+  animation: toast-in 0.28s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.progress-indeterminate {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-indeterminate::after {
   content: "";
   position: absolute;
-  inset: 18px 28px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 52% 44%, rgba(255, 255, 255, 0.34), transparent 34%),
-    radial-gradient(circle at 52% 55%, rgba(59, 130, 246, 0.16), transparent 56%);
-  pointer-events: none;
-  mix-blend-mode: screen;
+  inset: 0;
+  width: 40%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(var(--c-accent)),
+    transparent
+  );
+  animation: shimmer 1.4s ease-in-out infinite;
 }
 
-.hero-reference-visual {
-  transform: translateX(8px);
-  filter: saturate(1.06) contrast(1.01);
-}
-
-@media (max-width: 1366px) {
-  .grid-cols-5 {
-    gap: 0.75rem;
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-fade,
+  .animate-pop,
+  .animate-toast {
+    animation: none;
   }
-
-  .dashboard-layout {
-    max-width: 1328px;
+  .progress-indeterminate::after {
+    animation-duration: 3s;
   }
 }
 
-@media (max-height: 820px) {
-  .dashboard-layout {
-    padding-bottom: 0.25rem;
-  }
+/* Bar growth for disk analyzer ------------------------------------------- */
+
+.bar-grow {
+  transition: width 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
 }

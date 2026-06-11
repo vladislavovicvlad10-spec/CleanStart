@@ -106,32 +106,18 @@ pub struct CleanupOptions {
     pub move_to_recycle_bin: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CleanupSettings {
-    pub move_to_recycle_bin: bool,
-}
-
-impl Default for CleanupSettings {
-    fn default() -> Self {
-        Self {
-            move_to_recycle_bin: true,
-        }
-    }
-}
-
 #[derive(Debug, Clone)]
-struct CleanupRoot {
-    name: String,
-    description: String,
-    category: CleanupCategory,
-    source: String,
-    path: PathBuf,
-    selected_by_default: bool,
-    cleanable: bool,
-    protected: bool,
-    skip_reason: Option<String>,
-    warning: Option<String>,
+pub(crate) struct CleanupRoot {
+    pub(crate) name: String,
+    pub(crate) description: String,
+    pub(crate) category: CleanupCategory,
+    pub(crate) source: String,
+    pub(crate) path: PathBuf,
+    pub(crate) selected_by_default: bool,
+    pub(crate) cleanable: bool,
+    pub(crate) protected: bool,
+    pub(crate) skip_reason: Option<String>,
+    pub(crate) warning: Option<String>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -341,27 +327,7 @@ pub fn clean_selected_items(
     result
 }
 
-#[tauri::command]
-pub fn get_cleanup_settings() -> CleanupSettings {
-    let path = settings_path();
-    match fs::read_to_string(path) {
-        Ok(text) => serde_json::from_str(&text).unwrap_or_default(),
-        Err(_) => CleanupSettings::default(),
-    }
-}
-
-#[tauri::command]
-pub fn save_cleanup_settings(settings: CleanupSettings) -> Result<CleanupSettings, String> {
-    let path = settings_path();
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).map_err(|error| error.to_string())?;
-    }
-    let text = serde_json::to_string_pretty(&settings).map_err(|error| error.to_string())?;
-    fs::write(path, text).map_err(|error| error.to_string())?;
-    Ok(settings)
-}
-
-fn approved_roots() -> Vec<CleanupRoot> {
+pub(crate) fn approved_roots() -> Vec<CleanupRoot> {
     let mut roots = Vec::new();
 
     if let Ok(temp) = env::var("TEMP") {
@@ -1171,15 +1137,6 @@ fn move_path_to_recycle_bin(_path: &Path) -> Result<(), String> {
     Err("Recycle Bin cleanup is only supported on Windows.".to_string())
 }
 
-fn settings_path() -> PathBuf {
-    if let Ok(local_app_data) = env::var("LOCALAPPDATA") {
-        return PathBuf::from(local_app_data)
-            .join("CleanStart")
-            .join("settings.json");
-    }
-    env::temp_dir().join("CleanStart").join("settings.json")
-}
-
 fn outcome_item(item: &CleanupItem, reason: Option<String>) -> CleanupOutcomeItem {
     CleanupOutcomeItem {
         id: item.id.clone(),
@@ -1207,7 +1164,7 @@ fn stable_id(source: &str, path: &Path) -> String {
         .join("-")
 }
 
-fn display_path(path: &Path) -> String {
+pub(crate) fn display_path(path: &Path) -> String {
     let text = clean_path_text(path);
     if let Ok(local_app_data) = env::var("LOCALAPPDATA") {
         return text.replace(&clean_path_string(&local_app_data), "%LOCALAPPDATA%");
