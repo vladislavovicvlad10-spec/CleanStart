@@ -1,89 +1,88 @@
+@import "@fontsource-variable/space-grotesk";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   CleanStart design tokens
-   Dark is the primary theme. Light is fully supported via [data-theme].
+   CleanStart design tokens — "premium minimal" reboot.
 
-   Module identity accents — expressed as ambient light and colored shadow,
-   never as flat colored rectangles:
-     teal   -> Temp Cleaner       (--c-accent)
-     violet -> Startup Analyzer   (--c-violet)
-     amber  -> Disk Analyzer      (--c-warning)
-     slate  -> Activity Log       (--c-edge / muted)
+   One idea: OLED-black monochrome surfaces, hairline borders, and a single
+   electric lime accent. No per-module rainbow — identity comes from type,
+   icons and light. Semantic colors (success / warning / danger) stay muted
+   so the lime is always the loudest thing on screen.
+
+   Shape system: cards 16px, controls 10px, buttons & pills full-round.
 --------------------------------------------------------------------------- */
 
 :root,
 :root[data-theme="dark"] {
-  --c-bg: 8 11 15;
-  --c-surface: 16 21 28;
-  --c-surface2: 22 29 38;
-  --c-surface3: 30 39 51;
-  --c-ink: 233 239 246;
-  --c-muted: 141 154 171;
-  --c-edge: 148 163 184;
-  --c-accent: 45 212 191;
-  --c-accent-strong: 20 184 166;
-  --c-violet: 167 139 250;
-  --c-violet-strong: 139 92 246;
-  --c-success: 52 211 153;
-  --c-warning: 251 191 36;
-  --c-danger: 248 113 113;
+  --c-bg: 5 5 7;
+  --c-surface: 12 13 16;
+  --c-surface2: 18 19 24;
+  --c-surface3: 26 28 34;
+  --c-ink: 237 240 244;
+  --c-muted: 132 140 152;
+  --c-edge: 148 156 170;
+  --c-accent: 190 242 60;
+  --c-accent-strong: 154 205 30;
+  --c-violet: 158 197 255;
+  --c-violet-strong: 125 170 240;
+  --c-success: 110 231 183;
+  --c-warning: 235 179 75;
+  --c-danger: 244 113 113;
 
-  /* Atmosphere — tuned per theme so light mode stays clean. */
-  --bg-glow-a: rgb(45 212 191 / 0.07);
-  --bg-glow-b: rgb(139 92 246 / 0.055);
-  --bg-glow-c: rgb(45 212 191 / 0.03);
-  --noise-opacity: 0.022;
-  --card-topline: rgb(255 255 255 / 0.05);
-  --card-sheen: rgb(255 255 255 / 0.02);
-
-  /* Hero aurora — alpha ceilings per theme. */
-  --aurora-a: rgb(45 212 191 / 0.16);
-  --aurora-b: rgb(139 92 246 / 0.13);
-  --aurora-c: rgb(20 184 166 / 0.09);
-  --hero-spot: rgb(148 211 199 / 0.06);
+  /* Atmosphere */
+  --bg-glow-a: rgb(190 242 60 / 0.05);
+  --bg-glow-b: rgb(158 197 255 / 0.03);
+  --noise-opacity: 0.028;
+  --hairline: rgb(255 255 255 / 0.07);
+  --hairline-strong: rgb(255 255 255 / 0.13);
+  --card-topline: rgb(255 255 255 / 0.06);
+  --card-sheen: rgb(255 255 255 / 0.016);
+  --spot: rgb(190 242 60 / 0.07);
+  --spot-border: rgb(190 242 60 / 0.35);
 
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --c-bg: 241 244 249;
+  --c-bg: 246 246 244;
   --c-surface: 255 255 255;
-  --c-surface2: 244 247 250;
-  --c-surface3: 233 238 244;
-  --c-ink: 15 23 38;
-  --c-muted: 82 98 122;
-  --c-edge: 51 65 85;
-  --c-accent: 13 148 136;
-  --c-accent-strong: 15 118 110;
-  --c-violet: 124 58 237;
-  --c-violet-strong: 109 40 217;
-  --c-success: 5 150 105;
-  --c-warning: 180 83 9;
-  --c-danger: 220 38 38;
+  --c-surface2: 247 247 245;
+  --c-surface3: 238 238 235;
+  --c-ink: 17 19 23;
+  --c-muted: 105 112 122;
+  --c-edge: 60 66 76;
+  --c-accent: 90 124 15;
+  --c-accent-strong: 70 98 10;
+  --c-violet: 70 110 180;
+  --c-violet-strong: 50 90 160;
+  --c-success: 16 140 90;
+  --c-warning: 170 110 20;
+  --c-danger: 210 50 50;
 
-  --bg-glow-a: rgb(13 148 136 / 0.06);
-  --bg-glow-b: rgb(124 58 237 / 0.04);
-  --bg-glow-c: rgb(13 148 136 / 0.025);
-  --noise-opacity: 0.015;
-  --card-topline: rgb(255 255 255 / 0.65);
-  --card-sheen: rgb(255 255 255 / 0.35);
-
-  --aurora-a: rgb(13 148 136 / 0.1);
-  --aurora-b: rgb(124 58 237 / 0.07);
-  --aurora-c: rgb(15 118 110 / 0.05);
-  --hero-spot: rgb(13 148 136 / 0.05);
+  --bg-glow-a: rgb(120 160 30 / 0.05);
+  --bg-glow-b: rgb(70 110 180 / 0.03);
+  --noise-opacity: 0.018;
+  --hairline: rgb(17 19 23 / 0.08);
+  --hairline-strong: rgb(17 19 23 / 0.16);
+  --card-topline: rgb(255 255 255 / 0.7);
+  --card-sheen: rgb(255 255 255 / 0.4);
+  --spot: rgb(120 160 30 / 0.07);
+  --spot-border: rgb(90 124 15 / 0.4);
 
   color-scheme: light;
 }
 
-/* Shared easing vocabulary — stronger than the CSS built-ins. */
+/* The lime button is the same in both themes — black text on electric lime. */
 :root {
+  --lime: 190 242 60;
+  --lime-deep: 158 214 36;
+
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-spring: cubic-bezier(0.34, 1.3, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.35, 0.45, 1);
 }
 
 * {
@@ -101,15 +100,13 @@ body {
   min-height: 680px;
   overflow: hidden;
   background:
-    radial-gradient(1100px 540px at 18% -12%, var(--bg-glow-a), transparent 64%),
-    radial-gradient(900px 480px at 86% -8%, var(--bg-glow-b), transparent 62%),
-    radial-gradient(1300px 700px at 50% 118%, var(--bg-glow-c), transparent 60%),
+    radial-gradient(1000px 600px at 14% -14%, var(--bg-glow-a), transparent 60%),
+    radial-gradient(900px 520px at 88% -10%, var(--bg-glow-b), transparent 60%),
     rgb(var(--c-bg));
   color: rgb(var(--c-ink));
   font-family:
     "Segoe UI Variable Text",
     "Segoe UI",
-    Inter,
     system-ui,
     sans-serif;
   font-synthesis: none;
@@ -119,8 +116,8 @@ body {
   user-select: none;
 }
 
-/* Fine film-grain texture so the dark base never reads as flat. Fixed and
-   pointer-events-none — never on a scrolling container. */
+/* Film grain — slightly stronger than before, it is what makes true black
+   read as material instead of void. Fixed + pointer-events-none. */
 body::before {
   content: "";
   position: fixed;
@@ -150,26 +147,20 @@ button:disabled {
 }
 
 ::selection {
-  background: rgb(var(--c-accent) / 0.3);
+  background: rgb(var(--c-accent) / 0.35);
 }
 
 :focus-visible {
-  outline: 2px solid rgb(var(--c-accent) / 0.7);
+  outline: 2px solid rgb(var(--c-accent) / 0.8);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-/* Display type — Segoe UI Variable Display is the native Windows 11 optical
-   size for large text; it gives headings real weight without a webfont. */
+/* Display type — Space Grotesk carries the brand voice in headings and big
+   numbers; body stays native Segoe for Windows-perfect rendering. */
 .type-display {
-  font-family:
-    "Segoe UI Variable Display",
-    "Segoe UI Variable Text",
-    "Segoe UI",
-    Inter,
-    system-ui,
-    sans-serif;
-  letter-spacing: -0.02em;
+  font-family: "Space Grotesk Variable", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: -0.025em;
 }
 
 /* Scrollbars ------------------------------------------------------------- */
@@ -197,315 +188,226 @@ button:disabled {
   background: transparent;
 }
 
-/* Top navigation ----------------------------------------------------------- */
+/* Top navigation ------------------------------------------------------------
+   Quiet monochrome tabs; the active one is an inverted pill (ink on light /
+   light on ink) — the most expensive-looking treatment is plain contrast. */
 
-/* Each tab owns its underline; it scales in from the center when active.
-   No layout measurement, fully interruptible, 200ms ease-out. */
-.nav-tab-underline {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 0;
-  height: 2px;
-  border-radius: 999px;
-  background: rgb(var(--c-accent));
-  box-shadow: 0 0 8px rgb(var(--c-accent) / 0.55);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 200ms var(--ease-out-strong);
+.nav-pill {
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 140ms var(--ease-out-strong);
 }
 
-.nav-tab[data-active="true"] .nav-tab-underline {
-  transform: scaleX(1);
+.nav-pill:active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-pill:active {
+    transform: none;
+  }
 }
 
 /* Cards ------------------------------------------------------------------- */
 
-/* A 1px light top edge plus a faint vertical sheen sells the "lit from above"
-   read on dark without resorting to glass. */
 .card-topline {
-  background-image: linear-gradient(180deg, var(--card-sheen), transparent 36%);
+  background-image: linear-gradient(180deg, var(--card-sheen), transparent 40%);
   box-shadow:
     inset 0 1px 0 var(--card-topline),
-    0 1px 2px rgba(0, 0, 0, 0.25),
-    0 8px 24px -12px rgba(0, 0, 0, 0.35);
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 12px 32px -16px rgba(0, 0, 0, 0.5);
 }
 
-/* Dashboard module cards ---------------------------------------------------
-   Each module owns an accent expressed as internal ambient light (a soft
-   radial wash behind the icon) plus a colored shadow on hover. A shimmer
-   sweep crosses the card once per hover — transition-based, so it is
-   interruptible and reverses cleanly. */
+/* Spotlight cards -------------------------------------------------------------
+   The premium move: the card's hairline border lights up around the cursor,
+   and a faint lime wash follows inside. Coordinates (--mx / --my, in px)
+   are written directly on the element by a tiny mousemove handler.
 
-.module-card {
+   Implementation: ::before paints a radial gradient and is masked to a 1px
+   border ring (padding-box / border-box XOR), ::after is the interior wash. */
+
+.spot-card {
   position: relative;
   overflow: hidden;
-  box-shadow:
-    inset 0 1px 0 var(--card-topline),
-    0 1px 2px rgba(0, 0, 0, 0.25),
-    0 8px 24px -12px rgba(0, 0, 0, 0.35);
+  isolation: isolate;
   transition:
-    transform 200ms var(--ease-spring),
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+    transform 220ms var(--ease-spring),
+    box-shadow 200ms ease;
 }
 
-/* Internal ambient light, keyed to the module tone. Sits behind content. */
-.module-card::before {
+.spot-card::before {
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: inherit;
+  padding: 1px;
   pointer-events: none;
-  opacity: 0.85;
-  transition: opacity 200ms ease;
+  opacity: 0;
+  transition: opacity 250ms ease;
   background: radial-gradient(
-    340px 200px at 18% -12%,
-    var(--module-glow, transparent),
+    220px 220px at var(--mx, 50%) var(--my, 50%),
+    var(--spot-border),
+    transparent 72%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.spot-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  background: radial-gradient(
+    320px 240px at var(--mx, 50%) var(--my, 50%),
+    var(--spot),
     transparent 70%
   );
 }
 
-.module-card[data-tone="accent"] {
-  --module-glow: rgb(var(--c-accent) / 0.09);
-}
-.module-card[data-tone="violet"] {
-  --module-glow: rgb(var(--c-violet) / 0.09);
-}
-.module-card[data-tone="warning"] {
-  --module-glow: rgb(var(--c-warning) / 0.07);
-}
-.module-card[data-tone="neutral"] {
-  --module-glow: rgb(var(--c-edge) / 0.07);
-}
-
-/* Shimmer sweep — a skewed light bar parked off-canvas; hover translates it
-   across. Pure transform, interruptible, no keyframes. */
-.module-card .card-shimmer {
-  position: absolute;
-  top: -20%;
-  bottom: -20%;
-  left: -30%;
-  width: 36%;
-  pointer-events: none;
-  transform: translateX(-120%) skewX(-18deg);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgb(255 255 255 / 0.045),
-    transparent
-  );
-  transition: transform 700ms var(--ease-out-strong);
-}
-
 @media (hover: hover) and (pointer: fine) {
-  .module-card:hover {
-    transform: translateY(-3px) scale(1.012);
+  .spot-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 24px 48px -20px rgba(0, 0, 0, 0.65);
   }
 
-  .module-card:hover .card-shimmer {
-    transform: translateX(440%) skewX(-18deg);
-  }
-
-  .module-card:hover::before {
+  .spot-card:hover::before,
+  .spot-card:hover::after {
     opacity: 1;
   }
-
-  .module-card[data-tone="accent"]:hover {
-    border-color: rgb(var(--c-accent) / 0.38);
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 16px 40px -14px rgb(var(--c-accent) / 0.38),
-      0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .module-card[data-tone="violet"]:hover {
-    border-color: rgb(var(--c-violet) / 0.38);
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 16px 40px -14px rgb(var(--c-violet) / 0.38),
-      0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .module-card[data-tone="warning"]:hover {
-    border-color: rgb(var(--c-warning) / 0.38);
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 16px 40px -14px rgb(var(--c-warning) / 0.34),
-      0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .module-card[data-tone="neutral"]:hover {
-    border-color: rgb(var(--c-edge) / 0.38);
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 16px 40px -14px rgb(var(--c-edge) / 0.32),
-      0 2px 8px rgba(0, 0, 0, 0.3);
-  }
 }
 
-.module-card:active {
-  transform: translateY(-1px) scale(0.992);
+.spot-card:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .module-card,
-  .module-card:hover,
-  .module-card:active {
+  .spot-card,
+  .spot-card:hover,
+  .spot-card:active {
     transform: none;
-    transition: border-color 180ms ease, box-shadow 180ms ease;
   }
-  .module-card .card-shimmer,
-  .module-card:hover .card-shimmer {
-    transition: none;
-    transform: translateX(-120%) skewX(-18deg);
-  }
-}
-
-/* Icon bezel — a machined two-layer tile: outer tray + inner lit core. */
-.icon-bezel {
-  position: relative;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.09),
-    inset 0 -1px 0 rgb(0 0 0 / 0.18),
-    0 2px 6px -2px rgb(0 0 0 / 0.4);
-}
-
-:root[data-theme="light"] .icon-bezel {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.85),
-    inset 0 -1px 0 rgb(0 0 0 / 0.05),
-    0 2px 6px -2px rgb(0 0 0 / 0.12);
 }
 
 /* Hero ----------------------------------------------------------------------
-   The signature surface. A slow aurora drifts behind the content; a cursor
-   spotlight (CSS vars --mx / --my, updated directly on the element) adds a
-   quiet interactive layer. Both are decorative and fully disabled under
-   reduced motion / no-hover. */
+   A black instrument panel: hairline engineering grid fading out radially,
+   one lime field glow, and the radar visual on the right. */
 
 .hero-panel {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   background:
-    linear-gradient(180deg, var(--card-sheen), transparent 42%),
+    linear-gradient(180deg, var(--card-sheen), transparent 45%),
     rgb(var(--c-surface));
   box-shadow:
     inset 0 1px 0 var(--card-topline),
-    0 1px 2px rgba(0, 0, 0, 0.25),
-    0 16px 48px -20px rgba(0, 0, 0, 0.5);
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 24px 64px -28px rgba(0, 0, 0, 0.7);
 }
 
-.hero-aurora {
-  position: absolute;
-  inset: -40%;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(38% 46% at 24% 30%, var(--aurora-a), transparent 68%),
-    radial-gradient(34% 42% at 76% 22%, var(--aurora-b), transparent 66%),
-    radial-gradient(46% 52% at 58% 86%, var(--aurora-c), transparent 70%);
-  animation: aurora-drift 26s var(--ease-in-out-strong) infinite alternate;
-}
-
-@keyframes aurora-drift {
-  0% {
-    transform: translate3d(-2.5%, -2%, 0) rotate(-1.5deg) scale(1);
-  }
-  100% {
-    transform: translate3d(2.5%, 2.5%, 0) rotate(1.5deg) scale(1.06);
-  }
-}
-
-/* Cursor spotlight — coordinates come from JS as --mx / --my percentages. */
-.hero-spotlight {
+.hero-field {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 400ms ease;
-  background: radial-gradient(
-    420px 320px at var(--mx, 50%) var(--my, 50%),
-    var(--hero-spot),
-    transparent 70%
-  );
+  background:
+    radial-gradient(520px 320px at 82% 30%, rgb(var(--c-accent) / 0.07), transparent 65%),
+    radial-gradient(480px 360px at 8% 110%, rgb(var(--c-accent) / 0.04), transparent 60%);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .hero-panel:hover .hero-spotlight {
-    opacity: 1;
-  }
-}
-
-/* Faint engineering grid inside the hero — organizes the empty space. */
 .hero-grid {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background-image:
-    linear-gradient(rgb(var(--c-edge) / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(var(--c-edge) / 0.05) 1px, transparent 1px);
-  background-size: 44px 44px;
+    linear-gradient(var(--hairline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
+  background-size: 48px 48px;
   -webkit-mask-image: radial-gradient(
-    72% 100% at 70% 40%,
-    black 30%,
-    transparent 78%
+    80% 120% at 75% 35%,
+    black 25%,
+    transparent 75%
   );
-  mask-image: radial-gradient(72% 100% at 70% 40%, black 30%, transparent 78%);
+  mask-image: radial-gradient(80% 120% at 75% 35%, black 25%, transparent 75%);
+  opacity: 0.6;
 }
 
-/* Hero orb ---------------------------------------------------------------- */
+/* Radar ----------------------------------------------------------------------
+   The brand visual: concentric hairline rings with a slow lime sweep, the
+   scanning metaphor made literal. The sweep is a conic gradient rotating at
+   6s/turn; blips brighten as the beam passes (phase-offset opacity loops).
+   Everything stills under reduced motion. */
 
-@keyframes orb-drift {
+@keyframes radar-sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: conic-gradient(
+    from 0deg,
+    rgb(var(--c-accent) / 0.32) 0deg,
+    rgb(var(--c-accent) / 0.07) 52deg,
+    transparent 96deg
+  );
+  animation: radar-sweep 6s linear infinite;
+}
+
+@keyframes blip {
   0%,
+  78%,
   100% {
-    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.25;
   }
-  50% {
-    transform: translate3d(0, -7px, 0) scale(1.02);
-  }
-}
-
-@keyframes orb-ring-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  86% {
+    opacity: 1;
   }
 }
 
-@keyframes orb-ring-spin-reverse {
-  from {
-    transform: rotate(360deg);
+.radar-blip {
+  animation: blip 6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep,
+  .radar-blip {
+    animation: none;
   }
-  to {
-    transform: rotate(0deg);
+  .radar-blip {
+    opacity: 0.6;
   }
-}
-
-.orb-float {
-  animation: orb-drift 7s ease-in-out infinite;
-}
-
-.orb-ring {
-  animation: orb-ring-spin 28s linear infinite;
-}
-
-.orb-ring-reverse {
-  animation: orb-ring-spin-reverse 44s linear infinite;
 }
 
 /* Motion ------------------------------------------------------------------ */
 
-/* Entrances materialize: opacity + translate + a touch of blur. */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(10px);
-    filter: blur(3px);
+    transform: translateY(12px);
+    filter: blur(4px);
   }
   to {
     opacity: 1;
@@ -559,7 +461,7 @@ button:disabled {
 }
 
 .animate-rise {
-  animation: rise 0.4s var(--ease-out-strong) both;
+  animation: rise 0.5s var(--ease-out-strong) both;
 }
 
 .animate-fade {
@@ -598,20 +500,8 @@ button:disabled {
   .animate-rise,
   .animate-fade,
   .animate-pop,
-  .animate-toast,
-  .orb-float,
-  .orb-ring,
-  .orb-ring-reverse,
-  .hero-aurora {
+  .animate-toast {
     animation: none;
-  }
-  .nav-tab-underline {
-    transition: none;
-  }
-  .hero-spotlight,
-  .hero-panel:hover .hero-spotlight {
-    opacity: 0;
-    transition: none;
   }
   .progress-indeterminate::after {
     animation-duration: 3s;
@@ -619,37 +509,57 @@ button:disabled {
 }
 
 /* Buttons ------------------------------------------------------------------
-   The primary action is the one place the brand color goes fully saturated:
-   gradient fill, inner top light, accent glow that strengthens on hover. */
+   Primary: electric lime pill, black text, in both themes. The shine sweep
+   is a parked light bar that crosses on hover (transform-only). */
 
 .btn-primary {
-  background-image: linear-gradient(
-    180deg,
-    rgb(var(--c-accent)),
-    rgb(var(--c-accent-strong))
-  );
+  position: relative;
+  overflow: hidden;
+  color: rgb(10 12 8);
+  background: rgb(var(--lime));
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.25),
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 6px 20px -8px rgb(var(--c-accent) / 0.5);
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 8px 24px -10px rgb(var(--lime) / 0.55);
   transition:
     transform 140ms var(--ease-out-strong),
-    box-shadow 180ms ease,
-    filter 180ms ease;
+    box-shadow 200ms ease,
+    background-color 200ms ease;
+}
+
+.btn-primary .btn-shine {
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: -20%;
+  width: 30%;
+  pointer-events: none;
+  transform: translateX(-160%) skewX(-20deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.35),
+    transparent
+  );
+  transition: transform 600ms var(--ease-out-strong);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .btn-primary:hover:not(:disabled) {
-    filter: brightness(1.07);
+    background: rgb(var(--lime-deep));
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.28),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 8px 26px -8px rgb(var(--c-accent) / 0.6);
+      inset 0 1px 0 rgb(255 255 255 / 0.4),
+      0 1px 2px rgba(0, 0, 0, 0.4),
+      0 10px 32px -10px rgb(var(--lime) / 0.7);
+  }
+
+  .btn-primary:hover:not(:disabled) .btn-shine {
+    transform: translateX(520%) skewX(-20deg);
   }
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .btn-press {
@@ -662,7 +572,7 @@ button:disabled {
 }
 
 .btn-press:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -670,11 +580,14 @@ button:disabled {
   .btn-press:active:not(:disabled) {
     transform: none;
   }
+  .btn-primary .btn-shine,
+  .btn-primary:hover:not(:disabled) .btn-shine {
+    transition: none;
+    transform: translateX(-160%) skewX(-20deg);
+  }
 }
 
-/* Data rows ----------------------------------------------------------------
-   Selected rows get a quiet accent wash; the hover state is a soft inset so
-   long tables stay calm. */
+/* Data rows ----------------------------------------------------------------- */
 
 .data-row {
   transition: background-color 120ms ease, box-shadow 120ms ease;
@@ -682,13 +595,13 @@ button:disabled {
 
 @media (hover: hover) and (pointer: fine) {
   .data-row:hover {
-    background-color: rgb(var(--c-surface2) / 0.6);
+    background-color: rgb(var(--c-surface2) / 0.7);
   }
 }
 
 .data-row[data-selected="true"] {
-  background-color: rgb(var(--c-accent) / 0.045);
-  box-shadow: inset 2px 0 0 rgb(var(--c-accent) / 0.45);
+  background-color: rgb(var(--c-accent) / 0.05);
+  box-shadow: inset 2px 0 0 rgb(var(--c-accent) / 0.6);
 }
 
 /* Activity timeline rail ---------------------------------------------------- */
@@ -705,14 +618,14 @@ button:disabled {
   top: 30px;
   bottom: -2px;
   width: 1px;
-  background: rgb(var(--c-edge) / 0.15);
+  background: var(--hairline);
 }
 
 .timeline-rail:last-child::before {
   display: none;
 }
 
-/* Bar growth for disk analyzer ------------------------------------------- */
+/* Bars ---------------------------------------------------------------------- */
 
 .bar-grow {
   transition: width 0.7s var(--ease-out-strong);
@@ -724,5 +637,21 @@ button:disabled {
     rgb(var(--c-accent-strong)),
     rgb(var(--c-accent))
   );
-  box-shadow: 0 0 10px -2px rgb(var(--c-accent) / 0.4);
+  box-shadow: 0 0 12px -3px rgb(var(--c-accent) / 0.5);
+}
+
+/* Icon tile — monochrome, machined. Accent appears only on the icon glyph. */
+.icon-bezel {
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    0 2px 6px -2px rgb(0 0 0 / 0.5);
+}
+
+:root[data-theme="light"] .icon-bezel {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 -1px 0 rgb(0 0 0 / 0.05),
+    0 2px 6px -2px rgb(0 0 0 / 0.12);
 }

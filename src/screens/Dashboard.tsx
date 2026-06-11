@@ -1,6 +1,6 @@
 import {
   Activity,
-  ArrowRight,
+  ArrowUpRight,
   CalendarClock,
   Droplets,
   HardDrive,
@@ -30,7 +30,6 @@ interface ModuleCardData {
   title: string;
   description: string;
   icon: LucideIcon;
-  tone: Tone;
   action: string;
   stats: [ModuleStat, ModuleStat];
 }
@@ -40,33 +39,6 @@ const STATUS_TONE: Record<ActivityEntry["status"], Tone> = {
   success: "success",
   warning: "warning",
   error: "danger",
-};
-
-/** Per-module CTA styling. Tinted fill, ring edge, brightens with the card. */
-const CTA_CLASSES: Record<Tone, string> = {
-  accent:
-    "bg-accent/15 text-accent ring-1 ring-accent/25 group-hover:bg-accent/25 group-hover:ring-accent/40",
-  violet:
-    "bg-violet/15 text-violet ring-1 ring-violet/25 group-hover:bg-violet/25 group-hover:ring-violet/40",
-  warning:
-    "bg-warning/15 text-warning ring-1 ring-warning/25 group-hover:bg-warning/25 group-hover:ring-warning/40",
-  neutral:
-    "bg-edge/10 text-ink ring-1 ring-edge/20 group-hover:bg-edge/20 group-hover:ring-edge/35",
-  success:
-    "bg-success/15 text-success ring-1 ring-success/25 group-hover:bg-success/25 group-hover:ring-success/40",
-  danger:
-    "bg-danger/15 text-danger ring-1 ring-danger/25 group-hover:bg-danger/25 group-hover:ring-danger/40",
-};
-
-/** Arrow chip inside the CTA — its own circular wrapper so the action has a
-    physical "go" affordance that nudges forward with the card hover. */
-const CTA_CHIP_CLASSES: Record<Tone, string> = {
-  accent: "bg-accent/15",
-  violet: "bg-violet/15",
-  warning: "bg-warning/15",
-  neutral: "bg-edge/15",
-  success: "bg-success/15",
-  danger: "bg-danger/15",
 };
 
 const DASH = "—";
@@ -107,6 +79,15 @@ function useCountUp(target: number): number {
   return display;
 }
 
+/** Writes cursor coordinates (px) onto the element as --mx / --my for the
+    spotlight border. Direct style writes — no React state, no re-renders. */
+function trackSpot(event: ReactMouseEvent<HTMLElement>) {
+  const el = event.currentTarget;
+  const rect = el.getBoundingClientRect();
+  el.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+  el.style.setProperty("--my", `${event.clientY - rect.top}px`);
+}
+
 export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId) => void }) {
   const [history, setHistory] = useState<ActivityEntry[]>([]);
 
@@ -133,8 +114,6 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
     const byKind = (kind: ActivityEntry["kind"]) =>
       history.filter((entry) => entry.kind === kind);
 
-    const tempScans = byKind("scan");
-    const cleanups = byKind("cleanup");
     const startupEntries = byKind("startup");
     const diskEntries = byKind("disk");
 
@@ -145,8 +124,6 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       totalFreed,
       lastCleanup,
       lastScan,
-      tempScans,
-      cleanups,
       startupEntries,
       diskEntries,
       lastWeekCount,
@@ -159,7 +136,6 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Temp Cleaner",
       description: "Preview safe temp files, then send them to the Recycle Bin.",
       icon: Droplets,
-      tone: "accent",
       action: "Preview temp files",
       stats: [
         {
@@ -177,7 +153,6 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Startup Analyzer",
       description: "Review what launches with Windows. Disable reversibly.",
       icon: Rocket,
-      tone: "violet",
       action: "Review startup",
       stats: [
         {
@@ -198,7 +173,6 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Disk Analyzer",
       description: "See which profile folders use the most space. Read-only.",
       icon: HardDrive,
-      tone: "warning",
       action: "Analyze disk usage",
       stats: [
         {
@@ -218,7 +192,6 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Activity Log",
       description: "Every scan and cleanup, logged on this PC only.",
       icon: Activity,
-      tone: "neutral",
       action: "Open history",
       stats: [
         {
@@ -247,13 +220,13 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
           <ModuleCard
             key={module.id}
             module={module}
-            delay={160 + index * 60}
+            delay={180 + index * 70}
             onOpen={() => onNavigate(module.id)}
           />
         ))}
       </section>
 
-      <Card className="animate-rise p-5" style={{ animationDelay: "420ms" }}>
+      <Card className="animate-rise p-5" style={{ animationDelay: "480ms" }}>
         <div className="mb-3 flex items-center justify-between">
           <h3 className="type-display text-[15px] font-bold text-ink">Recent activity</h3>
           {history.length > 0 && (
@@ -305,11 +278,10 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
 }
 
 /* Hero ----------------------------------------------------------------------
-   The signature surface: an aurora console. A slow teal/violet aurora drifts
-   behind a faint engineering grid; the cursor casts a quiet spotlight. The
-   left side carries the promise and the primary action; the right side is the
-   shield orb. A live stats strip is built into the panel's base so the data
-   reads as part of the instrument, not as separate widgets. */
+   A black instrument panel. Left: the promise in Space Grotesk and the one
+   lime action on screen. Right: the radar — the scanning metaphor made
+   literal, a slow lime sweep over hairline rings. The stats strip is part of
+   the panel's base so live numbers read as the instrument's readout. */
 
 function Hero({
   totalFreed,
@@ -322,69 +294,53 @@ function Hero({
   lastScan?: ActivityEntry;
   onNavigate: (screen: ScreenId) => void;
 }) {
-  const panelRef = useRef<HTMLElement>(null);
-
-  // Spotlight tracking writes style props directly — no React state, no
-  // re-renders, runs only on devices with a fine pointer.
-  const handleMouseMove = (event: ReactMouseEvent<HTMLElement>) => {
-    const panel = panelRef.current;
-    if (!panel) return;
-    const rect = panel.getBoundingClientRect();
-    panel.style.setProperty("--mx", `${((event.clientX - rect.left) / rect.width) * 100}%`);
-    panel.style.setProperty("--my", `${((event.clientY - rect.top) / rect.height) * 100}%`);
-  };
-
   const animatedFreed = useCountUp(totalFreed);
 
   return (
-    <section
-      ref={panelRef}
-      onMouseMove={handleMouseMove}
-      className="hero-panel animate-rise rounded-2xl border border-edge/10"
-    >
-      <div className="hero-aurora" aria-hidden="true" />
+    <section className="hero-panel animate-rise rounded-2xl border border-edge/10">
+      <div className="hero-field" aria-hidden="true" />
       <div className="hero-grid" aria-hidden="true" />
-      <div className="hero-spotlight" aria-hidden="true" />
 
-      <div className="flex items-center justify-between gap-8 px-7 pt-6">
-        <div className="max-w-[620px] pb-2">
-          <h2 className="type-display text-[30px] font-bold leading-[1.12] text-ink">
-            Your PC, kept clean. <span className="text-accent">Transparently.</span>
+      <div className="flex items-center justify-between gap-8 px-8 pt-7">
+        <div className="max-w-[600px] pb-3">
+          <h2 className="type-display text-[34px] font-bold leading-[1.08] text-ink">
+            Your PC, kept clean.
+            <br />
+            <span className="text-accent">Transparently.</span>
           </h2>
-          <p className="mt-2.5 max-w-[560px] text-sm leading-6 text-muted">
+          <p className="mt-3 max-w-[540px] text-sm leading-6 text-muted">
             CleanStart never deletes anything without showing you first. Cleanups go to the
             Recycle Bin, personal folders are off-limits, and every action is logged locally.
           </p>
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-5 flex items-center gap-3">
             <Button size="md" icon={Droplets} onClick={() => onNavigate("temp")}>
               Preview temp files
             </Button>
             <div className="flex items-center gap-2">
-              <Pill tone="success">
-                <ShieldCheck className="h-3 w-3" /> Preview-first
+              <Pill tone="neutral">
+                <ShieldCheck className="h-3 w-3 text-success" /> Preview-first
               </Pill>
-              <Pill tone="accent">
-                <Recycle className="h-3 w-3" /> Recycle Bin only
+              <Pill tone="neutral">
+                <Recycle className="h-3 w-3 text-accent" /> Recycle Bin only
               </Pill>
             </div>
           </div>
         </div>
 
-        <HeroOrb />
+        <Radar />
       </div>
 
-      {/* Live stats strip — part of the instrument's base. */}
-      <div className="mt-4 grid grid-cols-3 divide-x divide-edge/10 border-t border-edge/10">
+      {/* Readout strip — part of the instrument's base. */}
+      <div className="mt-5 grid grid-cols-3 divide-x divide-edge/10 border-t border-edge/10">
         <HeroMetric
           icon={Sparkles}
-          tone="accent"
           value={totalFreed > 0 ? formatBytes(animatedFreed) : DASH}
           label="Space reclaimed with CleanStart"
           sub={totalFreed > 0 ? "all time" : "no cleanups yet"}
+          highlight
         />
         <HeroMetric
           icon={History}
-          tone="success"
           value={lastCleanup ? formatRelative(lastCleanup.timestampMs) : DASH}
           label="Last cleanup"
           sub={
@@ -393,7 +349,6 @@ function Hero({
         />
         <HeroMetric
           icon={CalendarClock}
-          tone="neutral"
           value={lastScan ? formatRelative(lastScan.timestampMs) : DASH}
           label="Last scan"
           sub={lastScan ? lastScan.title : "run a scan to get started"}
@@ -405,23 +360,30 @@ function Hero({
 
 function HeroMetric({
   icon,
-  tone,
   value,
   label,
   sub,
+  highlight = false,
 }: {
   icon: LucideIcon;
-  tone: Tone;
   value: string;
   label: string;
   sub?: string;
+  highlight?: boolean;
 }) {
   const Icon = icon;
   return (
-    <div className="flex items-center gap-3.5 px-6 py-4">
-      <IconBox icon={Icon} tone={tone} size="md" />
+    <div className="flex items-center gap-3.5 px-7 py-4">
+      <span
+        className={clsx(
+          "icon-bezel grid h-10 w-10 shrink-0 place-items-center rounded-xl ring-1",
+          highlight ? "bg-accent/10 ring-accent/25" : "bg-edge/[0.07] ring-edge/15",
+        )}
+      >
+        <Icon className={clsx("h-5 w-5", highlight ? "text-accent" : "text-muted")} />
+      </span>
       <div className="min-w-0">
-        <div className="type-display truncate text-[20px] font-bold leading-6 tabular-nums text-ink">
+        <div className="type-display truncate text-[21px] font-bold leading-6 tabular-nums text-ink">
           {value}
         </div>
         <div className="mt-0.5 truncate text-xs font-medium text-muted">
@@ -433,97 +395,61 @@ function HeroMetric({
   );
 }
 
-/* The shield orb: layered glows, a slow conic ring, a counter-rotating dashed
-   ring, and three orbiting marker dots riding the outer ring. Decorative,
-   aria-hidden, fully stilled under reduced motion. */
+/* The radar: hairline concentric rings, a crosshair, a slow lime sweep beam,
+   and three blips that brighten as the beam passes. Decorative, aria-hidden,
+   fully stilled under reduced motion. */
 
-function HeroOrb() {
+function Radar() {
   return (
-    <div
-      className="relative hidden h-[188px] w-[240px] shrink-0 lg:block"
-      aria-hidden="true"
-    >
-      {/* Ambient glow blobs */}
-      <div className="absolute right-8 top-1/2 h-[200px] w-[200px] -translate-y-1/2 rounded-full bg-accent/[0.14] blur-3xl" />
-      <div className="absolute right-0 top-2 h-[110px] w-[110px] rounded-full bg-violet/[0.13] blur-2xl" />
+    <div className="relative hidden h-[210px] w-[250px] shrink-0 lg:block" aria-hidden="true">
+      {/* Ambient lime bloom behind the dish */}
+      <div className="absolute right-4 top-1/2 h-[210px] w-[210px] -translate-y-1/2 rounded-full bg-accent/[0.07] blur-3xl" />
 
-      <div className="orb-float absolute right-10 top-1/2 h-[156px] w-[156px] -translate-y-1/2">
-        {/* Slow conic ring with orbiting marker dots */}
-        <div className="orb-ring absolute inset-0">
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background:
-                "conic-gradient(from 0deg, transparent 0deg, rgb(var(--c-accent) / 0.5) 70deg, transparent 160deg, rgb(var(--c-violet) / 0.35) 250deg, transparent 330deg)",
-            }}
-          />
-          <span className="absolute left-1/2 top-[-2px] h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-accent shadow-[0_0_8px_rgb(var(--c-accent)/0.8)]" />
-          <span className="absolute bottom-[18px] right-[8px] h-[4px] w-[4px] rounded-full bg-violet shadow-[0_0_6px_rgb(var(--c-violet)/0.8)]" />
-          <span className="absolute bottom-[30px] left-[4px] h-[3px] w-[3px] rounded-full bg-accent/80" />
-        </div>
+      <div className="absolute right-6 top-1/2 h-[196px] w-[196px] -translate-y-1/2 overflow-hidden rounded-full">
+        {/* Sweep beam */}
+        <div className="radar-sweep" />
 
-        {/* Counter-rotating dashed ring */}
-        <svg viewBox="0 0 156 156" className="orb-ring-reverse absolute inset-[-10px] h-[176px] w-[176px]">
-          <circle
-            cx="78"
-            cy="78"
-            r="74"
-            fill="none"
-            stroke="rgb(var(--c-edge) / 0.18)"
-            strokeWidth="1"
-            strokeDasharray="2 9"
-          />
+        {/* Rings + crosshair */}
+        <svg viewBox="0 0 196 196" className="absolute inset-0 h-full w-full">
+          <circle cx="98" cy="98" r="96" fill="none" stroke="rgb(var(--c-edge) / 0.16)" strokeWidth="1" />
+          <circle cx="98" cy="98" r="68" fill="none" stroke="rgb(var(--c-edge) / 0.13)" strokeWidth="1" />
+          <circle cx="98" cy="98" r="40" fill="none" stroke="rgb(var(--c-edge) / 0.11)" strokeWidth="1" />
+          <line x1="98" y1="2" x2="98" y2="194" stroke="rgb(var(--c-edge) / 0.08)" strokeWidth="1" />
+          <line x1="2" y1="98" x2="194" y2="98" stroke="rgb(var(--c-edge) / 0.08)" strokeWidth="1" />
         </svg>
 
-        {/* Inner disc */}
-        <div className="absolute inset-[6px] rounded-full bg-surface shadow-[inset_0_1px_0_rgb(255_255_255/0.07)] ring-1 ring-edge/15" />
-        <div
-          className="absolute inset-[6px] rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle at 32% 26%, rgb(var(--c-accent) / 0.16), transparent 58%)",
-          }}
+        {/* Blips — phase-offset so each lights up as the beam passes it. */}
+        <span
+          className="radar-blip absolute left-[128px] top-[44px] h-[5px] w-[5px] rounded-full bg-accent shadow-[0_0_10px_rgb(var(--c-accent)/0.9)]"
+          style={{ animationDelay: "-5.0s" }}
+        />
+        <span
+          className="radar-blip absolute left-[52px] top-[124px] h-[4px] w-[4px] rounded-full bg-accent shadow-[0_0_8px_rgb(var(--c-accent)/0.8)]"
+          style={{ animationDelay: "-2.4s" }}
+        />
+        <span
+          className="radar-blip absolute left-[140px] top-[140px] h-[3px] w-[3px] rounded-full bg-accent/90 shadow-[0_0_6px_rgb(var(--c-accent)/0.7)]"
+          style={{ animationDelay: "-0.6s" }}
         />
 
-        {/* Shield */}
-        <svg viewBox="0 0 40 40" className="absolute inset-0 m-auto h-[74px] w-[74px]">
-          <defs>
-            <linearGradient id="cs-hero-shield" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="rgb(var(--c-accent))" />
-              <stop offset="100%" stopColor="rgb(var(--c-accent-strong))" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M20 3 L34 8.5 V19 C34 28 28 34.5 20 37 C12 34.5 6 28 6 19 V8.5 Z"
-            fill="url(#cs-hero-shield)"
-            opacity="0.16"
-          />
-          <path
-            d="M20 3 L34 8.5 V19 C34 28 28 34.5 20 37 C12 34.5 6 28 6 19 V8.5 Z"
-            fill="none"
-            stroke="url(#cs-hero-shield)"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M13.5 19.5 L18 24 L27 14.5"
-            fill="none"
-            stroke="rgb(var(--c-accent))"
-            strokeWidth="2.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        {/* Center hub */}
+        <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_rgb(var(--c-accent)/0.9)]" />
+      </div>
+
+      {/* Status chip pinned to the dish */}
+      <div className="absolute bottom-2 right-10 flex items-center gap-1.5 rounded-full border border-edge/15 bg-surface/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted backdrop-blur">
+        <span className="h-1.5 w-1.5 rounded-full bg-success" />
+        System protected
       </div>
     </div>
   );
 }
 
 /* Module cards ----------------------------------------------------------------
-   Information + action: a bezeled icon carrying the module identity, two live
-   stats over a hairline, and a CTA whose arrow rides in its own chip. The
-   card lifts on a spring, casts a shadow in its own accent, and a single
-   light sweep crosses it — all interruptible. */
+   Monochrome instruments: machined icon tile, Space Grotesk title, two live
+   stats over a hairline, and a quiet CTA row whose arrow chip flips to lime
+   on hover. The card's border lights up around the cursor (spotlight ring)
+   and the surface lifts on a spring. */
 
 function ModuleCard({
   module,
@@ -537,10 +463,10 @@ function ModuleCard({
   const Icon = module.icon;
   return (
     <Card
-      className="module-card animate-rise group flex cursor-pointer flex-col p-4"
-      data-tone={module.tone}
+      className="spot-card animate-rise group flex cursor-pointer flex-col p-4"
       style={{ animationDelay: `${delay}ms` }}
       onClick={onOpen}
+      onMouseMove={trackSpot}
       role="button"
       tabIndex={0}
       aria-label={`${module.title}: ${module.action}`}
@@ -551,9 +477,9 @@ function ModuleCard({
         }
       }}
     >
-      <span className="card-shimmer" aria-hidden="true" />
-
-      <IconBox icon={Icon} tone={module.tone} size="lg" />
+      <span className="icon-bezel grid h-11 w-11 place-items-center rounded-xl bg-edge/[0.07] ring-1 ring-edge/15 transition-colors duration-200 group-hover:bg-accent/10 group-hover:ring-accent/25">
+        <Icon className="h-5 w-5 text-muted transition-colors duration-200 group-hover:text-accent" />
+      </span>
 
       <h3 className="type-display mt-3.5 text-[15px] font-bold text-ink">{module.title}</h3>
       <p className="mt-1 min-h-[36px] text-xs leading-[18px] text-muted">
@@ -573,20 +499,10 @@ function ModuleCard({
         ))}
       </div>
 
-      <span
-        className={clsx(
-          "mt-4 inline-flex h-9 w-full items-center justify-between rounded-lg pl-3.5 pr-1.5 text-[13px] font-semibold transition-all duration-150",
-          CTA_CLASSES[module.tone],
-        )}
-      >
+      <span className="mt-4 inline-flex h-9 w-full items-center justify-between rounded-full bg-edge/[0.07] pl-4 pr-1.5 text-[13px] font-semibold text-ink ring-1 ring-edge/15 transition-colors duration-200 group-hover:bg-edge/10 group-hover:ring-edge/25">
         {module.action}
-        <span
-          className={clsx(
-            "grid h-6 w-6 place-items-center rounded-full transition-transform duration-200 [transition-timing-function:var(--ease-spring)] group-hover:translate-x-0.5",
-            CTA_CHIP_CLASSES[module.tone],
-          )}
-        >
-          <ArrowRight className="h-3.5 w-3.5" />
+        <span className="grid h-6 w-6 place-items-center rounded-full bg-edge/15 text-ink transition-all duration-200 [transition-timing-function:var(--ease-spring)] group-hover:translate-x-0.5 group-hover:bg-accent group-hover:text-black">
+          <ArrowUpRight className="h-3.5 w-3.5" />
         </span>
       </span>
     </Card>

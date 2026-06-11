@@ -117,8 +117,8 @@ function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
     <svg viewBox="0 0 40 40" className={clsx("shrink-0", className)} aria-hidden="true">
       <defs>
         <linearGradient id="cs-logo" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#2dd4bf" />
-          <stop offset="100%" stopColor="#0d9488" />
+          <stop offset="0%" stopColor="rgb(var(--c-accent))" />
+          <stop offset="100%" stopColor="rgb(var(--c-accent-strong))" />
         </linearGradient>
       </defs>
       <path
@@ -136,7 +136,7 @@ function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
       <path
         d="M13.5 19.5 L18 24 L27 14.5"
         fill="none"
-        stroke="#2dd4bf"
+        stroke="rgb(var(--c-accent))"
         strokeWidth="2.8"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -171,7 +171,7 @@ function TopBar({
           </div>
         </div>
 
-        <nav className="flex items-stretch" aria-label="Main navigation">
+        <nav className="flex items-center gap-1" aria-label="Main navigation">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = item.id === activeScreen;
@@ -182,25 +182,15 @@ function TopBar({
                 data-active={active}
                 aria-current={active ? "page" : undefined}
                 onClick={() => onNavigate(item.id)}
-                className="nav-tab relative flex items-center px-1"
+                className={clsx(
+                  "nav-pill flex h-8 items-center gap-2 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold",
+                  active
+                    ? "bg-ink text-app shadow-[0_2px_12px_-2px_rgb(0_0_0/0.5)]"
+                    : "text-muted hover:bg-edge/10 hover:text-ink",
+                )}
               >
-                <span
-                  className={clsx(
-                    "flex h-8 items-center gap-2 whitespace-nowrap rounded-lg px-3 text-[13px] font-semibold transition-colors duration-150",
-                    active
-                      ? "bg-edge/10 text-ink"
-                      : "text-muted hover:bg-edge/[0.07] hover:text-ink",
-                  )}
-                >
-                  <Icon
-                    className={clsx(
-                      "h-4 w-4 shrink-0 transition-colors duration-150",
-                      active && "text-accent",
-                    )}
-                  />
-                  {item.label}
-                </span>
-                <span className="nav-tab-underline" aria-hidden="true" />
+                <Icon className="h-4 w-4 shrink-0" />
+                {item.label}
               </button>
             );
           })}

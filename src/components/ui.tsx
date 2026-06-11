@@ -81,20 +81,21 @@ export function Button({
       disabled={disabled || busy}
       title={title}
       className={clsx(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-semibold",
+        "inline-flex items-center justify-center gap-2 rounded-full font-semibold",
         "disabled:opacity-45 disabled:saturate-50 disabled:shadow-none",
-        size === "sm" && "h-8 px-3 text-xs",
-        size === "md" && "h-9 px-4 text-sm",
-        size === "lg" && "h-11 px-5 text-sm",
-        variant === "primary" && "btn-primary text-white",
+        size === "sm" && "h-8 px-3.5 text-xs",
+        size === "md" && "h-9 px-[18px] text-sm",
+        size === "lg" && "h-11 px-6 text-sm",
+        variant === "primary" && "btn-primary",
         variant === "secondary" &&
-          "btn-press border border-edge/20 bg-surface-2 text-ink hover:border-edge/35 hover:bg-surface-3",
+          "btn-press border border-edge/20 bg-surface-2 text-ink hover:border-edge/40 hover:bg-surface-3",
         variant === "ghost" && "btn-press text-muted hover:bg-edge/10 hover:text-ink",
         variant === "danger" &&
           "btn-press bg-danger/15 text-danger ring-1 ring-danger/30 hover:bg-danger/25",
         className,
       )}
     >
+      {variant === "primary" && <span className="btn-shine" aria-hidden="true" />}
       {busy ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
