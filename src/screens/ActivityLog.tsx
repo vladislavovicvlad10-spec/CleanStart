@@ -201,12 +201,17 @@ export function ActivityLogScreen() {
                 <div className="sticky top-0 z-10 border-b border-edge/10 bg-surface-2/95 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-muted backdrop-blur">
                   {group.label}
                 </div>
-                <div className="divide-y divide-edge/10">
+                <div>
                   {group.items.map((entry) => {
                     const Icon = STATUS_ICON[entry.status];
                     return (
-                      <div key={entry.id} className="flex items-start gap-3 px-4 py-3">
-                        <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${STATUS_COLOR[entry.status]}`} />
+                      <div
+                        key={entry.id}
+                        className="timeline-rail data-row flex items-start gap-3 px-4 py-3"
+                      >
+                        <span className="relative z-10 grid h-4 w-4 shrink-0 place-items-center bg-surface">
+                          <Icon className={`h-4 w-4 ${STATUS_COLOR[entry.status]}`} />
+                        </span>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <span className="truncate text-[13px] font-semibold text-ink">

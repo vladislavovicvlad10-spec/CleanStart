@@ -17,6 +17,8 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { isTauri } from "../lib/ipc";
 import type { ScreenId } from "../lib/types";
+import { IconBox } from "./ui";
+import type { Tone } from "./ui";
 
 interface NavEntry {
   id: ScreenId;
@@ -36,6 +38,8 @@ const NAV_ITEMS: NavEntry[] = [
 interface PageHeading {
   title: string;
   subtitle: string;
+  icon: LucideIcon;
+  tone: Tone;
 }
 
 /** Dashboard renders its own hero; every other screen gets this heading. */
@@ -43,22 +47,32 @@ const PAGE_HEADINGS: Partial<Record<ScreenId, PageHeading>> = {
   temp: {
     title: "Temp Cleaner",
     subtitle: "Preview safe temporary files, then move them to the Recycle Bin.",
+    icon: Droplets,
+    tone: "accent",
   },
   startup: {
     title: "Startup Analyzer",
     subtitle: "Review what launches with Windows. Disable reversibly, never delete.",
+    icon: Rocket,
+    tone: "violet",
   },
   disk: {
     title: "Disk Analyzer",
     subtitle: "See which profile folders use the most space. Strictly read-only.",
+    icon: HardDrive,
+    tone: "warning",
   },
   activity: {
     title: "Activity Log",
     subtitle: "A local history of every scan and cleanup. Nothing leaves this PC.",
+    icon: Activity,
+    tone: "neutral",
   },
   settings: {
     title: "Settings",
     subtitle: "Theme, behavior, and exactly what CleanStart is allowed to touch.",
+    icon: Settings,
+    tone: "neutral",
   },
 };
 
@@ -81,9 +95,14 @@ export function Shell({
         className="clean-scrollbar animate-rise min-h-0 flex-1 overflow-y-auto px-8 pb-6 pt-5"
       >
         {heading && (
-          <header className="mx-auto mb-5 w-full max-w-[1180px]">
-            <h1 className="text-xl font-bold tracking-tight text-ink">{heading.title}</h1>
-            <p className="mt-1 text-[13px] leading-5 text-muted">{heading.subtitle}</p>
+          <header className="mx-auto mb-5 flex w-full max-w-[1180px] items-center gap-3.5">
+            <IconBox icon={heading.icon} tone={heading.tone} size="lg" />
+            <div>
+              <h1 className="type-display text-[22px] font-bold leading-7 text-ink">
+                {heading.title}
+              </h1>
+              <p className="mt-0.5 text-[13px] leading-5 text-muted">{heading.subtitle}</p>
+            </div>
           </header>
         )}
         {children}
@@ -145,7 +164,7 @@ function TopBar({
         >
           <LogoMark />
           <div className="pointer-events-none flex items-baseline gap-2">
-            <span className="text-[15px] font-bold leading-none tracking-tight text-ink">
+            <span className="type-display text-[15px] font-bold leading-none text-ink">
               CleanStart
             </span>
             <span className="text-[10px] font-semibold text-muted/70">v1.0.0</span>

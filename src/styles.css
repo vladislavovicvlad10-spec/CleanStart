@@ -6,21 +6,22 @@
    CleanStart design tokens
    Dark is the primary theme. Light is fully supported via [data-theme].
 
-   Module identity accents:
-     teal   -> Temp Cleaner   (--c-accent)
-     violet -> Startup Analyzer (--c-violet)
-     amber  -> Disk Analyzer  (--c-warning)
-     slate  -> Activity Log   (--c-edge / muted)
+   Module identity accents — expressed as ambient light and colored shadow,
+   never as flat colored rectangles:
+     teal   -> Temp Cleaner       (--c-accent)
+     violet -> Startup Analyzer   (--c-violet)
+     amber  -> Disk Analyzer      (--c-warning)
+     slate  -> Activity Log       (--c-edge / muted)
 --------------------------------------------------------------------------- */
 
 :root,
 :root[data-theme="dark"] {
-  --c-bg: 9 12 16;
-  --c-surface: 17 22 29;
-  --c-surface2: 23 30 39;
-  --c-surface3: 31 40 52;
-  --c-ink: 231 237 244;
-  --c-muted: 139 152 169;
+  --c-bg: 8 11 15;
+  --c-surface: 16 21 28;
+  --c-surface2: 22 29 38;
+  --c-surface3: 30 39 51;
+  --c-ink: 233 239 246;
+  --c-muted: 141 154 171;
   --c-edge: 148 163 184;
   --c-accent: 45 212 191;
   --c-accent-strong: 20 184 166;
@@ -35,18 +36,25 @@
   --bg-glow-b: rgb(139 92 246 / 0.055);
   --bg-glow-c: rgb(45 212 191 / 0.03);
   --noise-opacity: 0.022;
-  --card-topline: rgb(255 255 255 / 0.045);
+  --card-topline: rgb(255 255 255 / 0.05);
+  --card-sheen: rgb(255 255 255 / 0.02);
+
+  /* Hero aurora — alpha ceilings per theme. */
+  --aurora-a: rgb(45 212 191 / 0.16);
+  --aurora-b: rgb(139 92 246 / 0.13);
+  --aurora-c: rgb(20 184 166 / 0.09);
+  --hero-spot: rgb(148 211 199 / 0.06);
 
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --c-bg: 242 245 249;
+  --c-bg: 241 244 249;
   --c-surface: 255 255 255;
   --c-surface2: 244 247 250;
   --c-surface3: 233 238 244;
-  --c-ink: 16 24 40;
-  --c-muted: 84 100 124;
+  --c-ink: 15 23 38;
+  --c-muted: 82 98 122;
   --c-edge: 51 65 85;
   --c-accent: 13 148 136;
   --c-accent-strong: 15 118 110;
@@ -60,7 +68,13 @@
   --bg-glow-b: rgb(124 58 237 / 0.04);
   --bg-glow-c: rgb(13 148 136 / 0.025);
   --noise-opacity: 0.015;
-  --card-topline: rgb(255 255 255 / 0.6);
+  --card-topline: rgb(255 255 255 / 0.65);
+  --card-sheen: rgb(255 255 255 / 0.35);
+
+  --aurora-a: rgb(13 148 136 / 0.1);
+  --aurora-b: rgb(124 58 237 / 0.07);
+  --aurora-c: rgb(15 118 110 / 0.05);
+  --hero-spot: rgb(13 148 136 / 0.05);
 
   color-scheme: light;
 }
@@ -69,6 +83,7 @@
 :root {
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring: cubic-bezier(0.34, 1.3, 0.5, 1);
 }
 
 * {
@@ -144,6 +159,19 @@ button:disabled {
   border-radius: 4px;
 }
 
+/* Display type — Segoe UI Variable Display is the native Windows 11 optical
+   size for large text; it gives headings real weight without a webfont. */
+.type-display {
+  font-family:
+    "Segoe UI Variable Display",
+    "Segoe UI Variable Text",
+    "Segoe UI",
+    Inter,
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.02em;
+}
+
 /* Scrollbars ------------------------------------------------------------- */
 
 .clean-scrollbar {
@@ -181,6 +209,7 @@ button:disabled {
   height: 2px;
   border-radius: 999px;
   background: rgb(var(--c-accent));
+  box-shadow: 0 0 8px rgb(var(--c-accent) / 0.55);
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 200ms var(--ease-out-strong);
@@ -192,8 +221,10 @@ button:disabled {
 
 /* Cards ------------------------------------------------------------------- */
 
-/* A 1px light top edge sells the "lit from above" glass read on dark. */
+/* A 1px light top edge plus a faint vertical sheen sells the "lit from above"
+   read on dark without resorting to glass. */
 .card-topline {
+  background-image: linear-gradient(180deg, var(--card-sheen), transparent 36%);
   box-shadow:
     inset 0 1px 0 var(--card-topline),
     0 1px 2px rgba(0, 0, 0, 0.25),
@@ -201,60 +232,119 @@ button:disabled {
 }
 
 /* Dashboard module cards ---------------------------------------------------
-   Hover lifts the card and casts a glow in the module's own accent. The
-   inset top-light is part of every state so the edge never flickers. */
+   Each module owns an accent expressed as internal ambient light (a soft
+   radial wash behind the icon) plus a colored shadow on hover. A shimmer
+   sweep crosses the card once per hover — transition-based, so it is
+   interruptible and reverses cleanly. */
 
 .module-card {
+  position: relative;
+  overflow: hidden;
   box-shadow:
     inset 0 1px 0 var(--card-topline),
     0 1px 2px rgba(0, 0, 0, 0.25),
     0 8px 24px -12px rgba(0, 0, 0, 0.35);
   transition:
-    transform 180ms var(--ease-out-strong),
+    transform 200ms var(--ease-spring),
     border-color 180ms ease,
     box-shadow 180ms ease;
 }
 
+/* Internal ambient light, keyed to the module tone. Sits behind content. */
+.module-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 200ms ease;
+  background: radial-gradient(
+    340px 200px at 18% -12%,
+    var(--module-glow, transparent),
+    transparent 70%
+  );
+}
+
+.module-card[data-tone="accent"] {
+  --module-glow: rgb(var(--c-accent) / 0.09);
+}
+.module-card[data-tone="violet"] {
+  --module-glow: rgb(var(--c-violet) / 0.09);
+}
+.module-card[data-tone="warning"] {
+  --module-glow: rgb(var(--c-warning) / 0.07);
+}
+.module-card[data-tone="neutral"] {
+  --module-glow: rgb(var(--c-edge) / 0.07);
+}
+
+/* Shimmer sweep — a skewed light bar parked off-canvas; hover translates it
+   across. Pure transform, interruptible, no keyframes. */
+.module-card .card-shimmer {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -30%;
+  width: 36%;
+  pointer-events: none;
+  transform: translateX(-120%) skewX(-18deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.045),
+    transparent
+  );
+  transition: transform 700ms var(--ease-out-strong);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .module-card:hover {
-    transform: translateY(-2px) scale(1.01);
+    transform: translateY(-3px) scale(1.012);
+  }
+
+  .module-card:hover .card-shimmer {
+    transform: translateX(440%) skewX(-18deg);
+  }
+
+  .module-card:hover::before {
+    opacity: 1;
   }
 
   .module-card[data-tone="accent"]:hover {
-    border-color: rgb(var(--c-accent) / 0.35);
+    border-color: rgb(var(--c-accent) / 0.38);
     box-shadow:
       inset 0 1px 0 var(--card-topline),
-      0 14px 36px -14px rgb(var(--c-accent) / 0.35),
+      0 16px 40px -14px rgb(var(--c-accent) / 0.38),
       0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .module-card[data-tone="violet"]:hover {
-    border-color: rgb(var(--c-violet) / 0.35);
+    border-color: rgb(var(--c-violet) / 0.38);
     box-shadow:
       inset 0 1px 0 var(--card-topline),
-      0 14px 36px -14px rgb(var(--c-violet) / 0.35),
+      0 16px 40px -14px rgb(var(--c-violet) / 0.38),
       0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .module-card[data-tone="warning"]:hover {
-    border-color: rgb(var(--c-warning) / 0.35);
+    border-color: rgb(var(--c-warning) / 0.38);
     box-shadow:
       inset 0 1px 0 var(--card-topline),
-      0 14px 36px -14px rgb(var(--c-warning) / 0.32),
+      0 16px 40px -14px rgb(var(--c-warning) / 0.34),
       0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .module-card[data-tone="neutral"]:hover {
-    border-color: rgb(var(--c-edge) / 0.35);
+    border-color: rgb(var(--c-edge) / 0.38);
     box-shadow:
       inset 0 1px 0 var(--card-topline),
-      0 14px 36px -14px rgb(var(--c-edge) / 0.3),
+      0 16px 40px -14px rgb(var(--c-edge) / 0.32),
       0 2px 8px rgba(0, 0, 0, 0.3);
   }
 }
 
 .module-card:active {
-  transform: translateY(0) scale(0.995);
+  transform: translateY(-1px) scale(0.992);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -264,6 +354,106 @@ button:disabled {
     transform: none;
     transition: border-color 180ms ease, box-shadow 180ms ease;
   }
+  .module-card .card-shimmer,
+  .module-card:hover .card-shimmer {
+    transition: none;
+    transform: translateX(-120%) skewX(-18deg);
+  }
+}
+
+/* Icon bezel — a machined two-layer tile: outer tray + inner lit core. */
+.icon-bezel {
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.09),
+    inset 0 -1px 0 rgb(0 0 0 / 0.18),
+    0 2px 6px -2px rgb(0 0 0 / 0.4);
+}
+
+:root[data-theme="light"] .icon-bezel {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.85),
+    inset 0 -1px 0 rgb(0 0 0 / 0.05),
+    0 2px 6px -2px rgb(0 0 0 / 0.12);
+}
+
+/* Hero ----------------------------------------------------------------------
+   The signature surface. A slow aurora drifts behind the content; a cursor
+   spotlight (CSS vars --mx / --my, updated directly on the element) adds a
+   quiet interactive layer. Both are decorative and fully disabled under
+   reduced motion / no-hover. */
+
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, var(--card-sheen), transparent 42%),
+    rgb(var(--c-surface));
+  box-shadow:
+    inset 0 1px 0 var(--card-topline),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 16px 48px -20px rgba(0, 0, 0, 0.5);
+}
+
+.hero-aurora {
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 46% at 24% 30%, var(--aurora-a), transparent 68%),
+    radial-gradient(34% 42% at 76% 22%, var(--aurora-b), transparent 66%),
+    radial-gradient(46% 52% at 58% 86%, var(--aurora-c), transparent 70%);
+  animation: aurora-drift 26s var(--ease-in-out-strong) infinite alternate;
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(-2.5%, -2%, 0) rotate(-1.5deg) scale(1);
+  }
+  100% {
+    transform: translate3d(2.5%, 2.5%, 0) rotate(1.5deg) scale(1.06);
+  }
+}
+
+/* Cursor spotlight — coordinates come from JS as --mx / --my percentages. */
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  background: radial-gradient(
+    420px 320px at var(--mx, 50%) var(--my, 50%),
+    var(--hero-spot),
+    transparent 70%
+  );
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-panel:hover .hero-spotlight {
+    opacity: 1;
+  }
+}
+
+/* Faint engineering grid inside the hero — organizes the empty space. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(var(--c-edge) / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--c-edge) / 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(
+    72% 100% at 70% 40%,
+    black 30%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(72% 100% at 70% 40%, black 30%, transparent 78%);
 }
 
 /* Hero orb ---------------------------------------------------------------- */
@@ -274,7 +464,7 @@ button:disabled {
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(0, -7px, 0) scale(1.025);
+    transform: translate3d(0, -7px, 0) scale(1.02);
   }
 }
 
@@ -287,6 +477,15 @@ button:disabled {
   }
 }
 
+@keyframes orb-ring-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
 .orb-float {
   animation: orb-drift 7s ease-in-out infinite;
 }
@@ -295,16 +494,23 @@ button:disabled {
   animation: orb-ring-spin 28s linear infinite;
 }
 
+.orb-ring-reverse {
+  animation: orb-ring-spin-reverse 44s linear infinite;
+}
+
 /* Motion ------------------------------------------------------------------ */
 
+/* Entrances materialize: opacity + translate + a touch of blur. */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
+    filter: blur(3px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
   }
 }
 
@@ -320,11 +526,13 @@ button:disabled {
 @keyframes pop {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.985);
+    transform: translateY(10px) scale(0.97);
+    filter: blur(2px);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -341,15 +549,17 @@ button:disabled {
   from {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
+    filter: blur(2px);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
 .animate-rise {
-  animation: rise 0.35s var(--ease-out-strong) both;
+  animation: rise 0.4s var(--ease-out-strong) both;
 }
 
 .animate-fade {
@@ -357,11 +567,11 @@ button:disabled {
 }
 
 .animate-pop {
-  animation: pop 0.25s var(--ease-out-strong) both;
+  animation: pop 0.26s var(--ease-out-strong) both;
 }
 
 .animate-toast {
-  animation: toast-in 0.28s var(--ease-out-strong) both;
+  animation: toast-in 0.3s var(--ease-out-strong) both;
 }
 
 .progress-indeterminate {
@@ -390,10 +600,17 @@ button:disabled {
   .animate-pop,
   .animate-toast,
   .orb-float,
-  .orb-ring {
+  .orb-ring,
+  .orb-ring-reverse,
+  .hero-aurora {
     animation: none;
   }
   .nav-tab-underline {
+    transition: none;
+  }
+  .hero-spotlight,
+  .hero-panel:hover .hero-spotlight {
+    opacity: 0;
     transition: none;
   }
   .progress-indeterminate::after {
@@ -401,8 +618,111 @@ button:disabled {
   }
 }
 
+/* Buttons ------------------------------------------------------------------
+   The primary action is the one place the brand color goes fully saturated:
+   gradient fill, inner top light, accent glow that strengthens on hover. */
+
+.btn-primary {
+  background-image: linear-gradient(
+    180deg,
+    rgb(var(--c-accent)),
+    rgb(var(--c-accent-strong))
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 6px 20px -8px rgb(var(--c-accent) / 0.5);
+  transition:
+    transform 140ms var(--ease-out-strong),
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover:not(:disabled) {
+    filter: brightness(1.07);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 8px 26px -8px rgb(var(--c-accent) / 0.6);
+  }
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-press {
+  transition:
+    transform 140ms var(--ease-out-strong),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 180ms ease;
+}
+
+.btn-press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary:active:not(:disabled),
+  .btn-press:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Data rows ----------------------------------------------------------------
+   Selected rows get a quiet accent wash; the hover state is a soft inset so
+   long tables stay calm. */
+
+.data-row {
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .data-row:hover {
+    background-color: rgb(var(--c-surface2) / 0.6);
+  }
+}
+
+.data-row[data-selected="true"] {
+  background-color: rgb(var(--c-accent) / 0.045);
+  box-shadow: inset 2px 0 0 rgb(var(--c-accent) / 0.45);
+}
+
+/* Activity timeline rail ---------------------------------------------------- */
+
+.timeline-rail {
+  position: relative;
+}
+
+.timeline-rail::before {
+  content: "";
+  position: absolute;
+  /* Rows are padded 16px; the 16px status icon centers at x = 24px. */
+  left: 23.5px;
+  top: 30px;
+  bottom: -2px;
+  width: 1px;
+  background: rgb(var(--c-edge) / 0.15);
+}
+
+.timeline-rail:last-child::before {
+  display: none;
+}
+
 /* Bar growth for disk analyzer ------------------------------------------- */
 
 .bar-grow {
-  transition: width 0.6s var(--ease-out-strong);
+  transition: width 0.7s var(--ease-out-strong);
+}
+
+.disk-bar {
+  background-image: linear-gradient(
+    90deg,
+    rgb(var(--c-accent-strong)),
+    rgb(var(--c-accent))
+  );
+  box-shadow: 0 0 10px -2px rgb(var(--c-accent) / 0.4);
 }

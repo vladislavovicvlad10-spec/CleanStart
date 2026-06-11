@@ -183,36 +183,48 @@ export function DiskAnalyzerScreen() {
                 </Notice>
               )}
 
-              {result.folders.map((folder, index) => (
-                <div key={folder.displayPath} className="group rounded-lg px-2 py-2 hover:bg-surface-2/60">
-                  <div className="flex items-center justify-between gap-4 text-[13px]">
-                    <div className="flex min-w-0 items-center gap-2.5">
-                      <Folder className="h-4 w-4 shrink-0 text-accent" />
-                      <span className="font-semibold text-ink">{folder.name}</span>
-                      <span className="hidden truncate font-mono text-[11px] text-muted md:inline">
-                        {folder.displayPath}
-                      </span>
+              {result.folders.map((folder, index) => {
+                const share =
+                  result.totalBytes > 0 ? (folder.sizeBytes / result.totalBytes) * 100 : 0;
+                return (
+                  <div
+                    key={folder.displayPath}
+                    className="data-row group rounded-lg px-2 py-2"
+                  >
+                    <div className="flex items-center justify-between gap-4 text-[13px]">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-accent/10 ring-1 ring-accent/15">
+                          <Folder className="h-3.5 w-3.5 text-accent" />
+                        </span>
+                        <span className="font-semibold text-ink">{folder.name}</span>
+                        <span className="hidden truncate font-mono text-[11px] text-muted md:inline">
+                          {folder.displayPath}
+                        </span>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span className="text-xs tabular-nums text-muted">
+                          {formatCount(folder.fileCount, "file")}
+                        </span>
+                        <span className="w-12 text-right text-xs font-semibold tabular-nums text-muted">
+                          {share >= 0.1 ? `${share.toFixed(share >= 10 ? 0 : 1)}%` : "<0.1%"}
+                        </span>
+                        <span className="w-20 text-right font-semibold tabular-nums text-ink">
+                          {formatBytes(folder.sizeBytes)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <span className="text-xs text-muted">
-                        {formatCount(folder.fileCount, "file")}
-                      </span>
-                      <span className="w-20 text-right font-semibold text-ink">
-                        {formatBytes(folder.sizeBytes)}
-                      </span>
+                    <div className="ml-[38px] mt-1.5 h-1.5 overflow-hidden rounded-full bg-edge/10">
+                      <div
+                        className="bar-grow disk-bar h-full rounded-full"
+                        style={{
+                          width: `${Math.max((folder.sizeBytes / maxFolderSize) * 100, 0.5)}%`,
+                          transitionDelay: `${index * 40}ms`,
+                        }}
+                      />
                     </div>
                   </div>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-edge/10">
-                    <div
-                      className="bar-grow h-full rounded-full bg-accent/80"
-                      style={{
-                        width: `${Math.max((folder.sizeBytes / maxFolderSize) * 100, 0.5)}%`,
-                        transitionDelay: `${index * 40}ms`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )
         )}
@@ -229,7 +241,7 @@ export function DiskAnalyzerScreen() {
               (file) => (
                 <div
                   key={file.displayPath}
-                  className="grid grid-cols-[minmax(220px,1fr)_110px_110px] items-center gap-3 px-4 py-2 text-[13px] transition-colors hover:bg-surface-2/60"
+                  className="data-row grid grid-cols-[minmax(220px,1fr)_110px_110px] items-center gap-3 px-4 py-2 text-[13px]"
                 >
                   <div className="min-w-0">
                     <div className="truncate font-semibold text-ink">{file.name}</div>
@@ -240,7 +252,7 @@ export function DiskAnalyzerScreen() {
                   <span className="text-xs text-muted">
                     {file.modifiedMs ? formatRelative(file.modifiedMs) : "—"}
                   </span>
-                  <span className="text-right font-semibold text-ink">
+                  <span className="text-right font-semibold tabular-nums text-ink">
                     {formatBytes(file.sizeBytes)}
                   </span>
                 </div>

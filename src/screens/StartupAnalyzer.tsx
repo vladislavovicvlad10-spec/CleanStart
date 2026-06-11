@@ -22,6 +22,7 @@ import {
   ProgressBar,
   SearchInput,
   StatTile,
+  StatusDot,
   Toggle,
 } from "../components/ui";
 import { useToast } from "../state/ToastContext";
@@ -277,7 +278,7 @@ function StartupRow({
   return (
     <div
       className={clsx(
-        "grid min-h-[56px] grid-cols-[minmax(260px,1.7fr)_180px_110px_90px] items-center px-4 py-2 transition-colors hover:bg-surface-2/60",
+        "data-row grid min-h-[56px] grid-cols-[minmax(260px,1.7fr)_180px_110px_90px] items-center px-4 py-2",
         !entry.enabled && "opacity-75",
       )}
     >
@@ -292,9 +293,10 @@ function StartupRow({
       <Pill tone="neutral" className="w-fit">
         {entry.source}
       </Pill>
-      <Pill tone={entry.enabled ? "success" : "warning"} className="w-fit">
-        {entry.enabled ? "Enabled" : "Disabled"}
-      </Pill>
+      <StatusDot
+        tone={entry.enabled ? "success" : "warning"}
+        label={entry.enabled ? "Enabled" : "Disabled"}
+      />
       <div className="flex justify-end">
         <Toggle
           checked={entry.enabled}

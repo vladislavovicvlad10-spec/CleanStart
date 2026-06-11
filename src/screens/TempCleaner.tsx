@@ -534,8 +534,9 @@ function ItemRow({
   const Icon = CATEGORY_ICON[item.category];
   return (
     <div
+      data-selected={item.selected && !item.status}
       className={clsx(
-        "grid min-h-[52px] grid-cols-[44px_minmax(240px,1.6fr)_120px_90px_80px_minmax(180px,1fr)] items-center px-4 py-1.5 text-sm transition-colors hover:bg-surface-2/60",
+        "data-row grid min-h-[52px] grid-cols-[44px_minmax(240px,1.6fr)_120px_90px_80px_minmax(180px,1fr)] items-center px-4 py-1.5 text-sm",
         item.status === "failed" && "bg-danger/5",
         item.status === "skipped" && "bg-warning/5",
       )}
@@ -547,7 +548,16 @@ function ItemRow({
         onChange={(selected) => onToggle(item.id, selected)}
       />
       <div className="flex min-w-0 items-center gap-3 pr-3">
-        <Icon className="h-4 w-4 shrink-0 text-muted" />
+        <span
+          className={clsx(
+            "grid h-7 w-7 shrink-0 place-items-center rounded-lg ring-1",
+            item.selected
+              ? "bg-accent/10 ring-accent/20 text-accent"
+              : "bg-edge/[0.07] ring-edge/10 text-muted",
+          )}
+        >
+          <Icon className="h-3.5 w-3.5" />
+        </span>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="truncate text-[13px] font-semibold text-ink">{item.name}</span>
@@ -570,8 +580,12 @@ function ItemRow({
       <Pill tone={CATEGORY_TONE[item.category]} className="w-fit">
         {item.category}
       </Pill>
-      <span className="text-[13px] font-semibold text-ink">{formatBytes(item.sizeBytes)}</span>
-      <span className="text-[13px] text-muted">{item.itemsCount.toLocaleString()}</span>
+      <span className="text-[13px] font-semibold tabular-nums text-ink">
+        {formatBytes(item.sizeBytes)}
+      </span>
+      <span className="text-[13px] tabular-nums text-muted">
+        {item.itemsCount.toLocaleString()}
+      </span>
       <span className="truncate pr-2 font-mono text-[11px] text-muted">
         {item.displayPath || item.path}
       </span>
@@ -581,8 +595,8 @@ function ItemRow({
 
 function ConfirmMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-surface-2 px-3 py-2.5 ring-1 ring-edge/10">
-      <div className="text-base font-bold text-ink">{value}</div>
+    <div className="rounded-xl bg-surface-2 px-3 py-2.5 shadow-[inset_0_1px_0_var(--card-topline)] ring-1 ring-edge/10">
+      <div className="type-display text-base font-bold tabular-nums text-ink">{value}</div>
       <div className="mt-0.5 text-[11px] font-medium text-muted">{label}</div>
     </div>
   );

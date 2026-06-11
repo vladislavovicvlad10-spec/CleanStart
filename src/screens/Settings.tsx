@@ -254,18 +254,65 @@ function ThemeOption({
   active: boolean;
   onSelect: (theme: ThemeId) => void;
 }) {
+  const dark = theme === "dark";
   return (
     <button
       onClick={() => onSelect(theme)}
+      aria-pressed={active}
       className={clsx(
-        "flex h-10 flex-1 items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-all duration-150",
+        "btn-press flex-1 overflow-hidden rounded-xl text-left ring-1 transition-all duration-150",
         active
-          ? "bg-accent/10 text-accent ring-1 ring-accent/30"
-          : "bg-surface-2 text-muted ring-1 ring-edge/10 hover:text-ink",
+          ? "ring-2 ring-accent/60 shadow-[0_0_20px_-6px_rgb(var(--c-accent)/0.45)]"
+          : "ring-edge/15 hover:ring-edge/30",
       )}
     >
-      {icon}
-      {label}
+      {/* Miniature of the app surface in this theme. */}
+      <span
+        aria-hidden="true"
+        className="block px-3 pt-3"
+        style={{ background: dark ? "rgb(8 11 15)" : "rgb(241 244 249)" }}
+      >
+        <span
+          className="block rounded-t-lg p-2"
+          style={{
+            background: dark ? "rgb(16 21 28)" : "rgb(255 255 255)",
+            boxShadow: dark
+              ? "inset 0 1px 0 rgb(255 255 255 / 0.05)"
+              : "inset 0 1px 0 rgb(255 255 255 / 0.65), 0 0 0 1px rgb(15 23 38 / 0.06)",
+          }}
+        >
+          <span
+            className="block h-1.5 w-10 rounded-full"
+            style={{ background: dark ? "rgb(233 239 246)" : "rgb(15 23 38)", opacity: 0.85 }}
+          />
+          <span
+            className="mt-1.5 block h-1 w-16 rounded-full"
+            style={{ background: dark ? "rgb(141 154 171)" : "rgb(82 98 122)", opacity: 0.6 }}
+          />
+          <span className="mt-2 flex items-center gap-1 pb-0.5">
+            <span
+              className="block h-2.5 w-7 rounded-sm"
+              style={{ background: dark ? "rgb(45 212 191)" : "rgb(13 148 136)" }}
+            />
+            <span
+              className="block h-2.5 w-7 rounded-sm"
+              style={{
+                background: dark ? "rgb(167 139 250 / 0.45)" : "rgb(124 58 237 / 0.3)",
+              }}
+            />
+          </span>
+        </span>
+      </span>
+      <span
+        className={clsx(
+          "flex items-center gap-2 px-3 py-2.5 text-sm font-semibold",
+          active ? "text-accent" : "text-muted",
+        )}
+      >
+        {icon}
+        {label}
+        {active && <CheckCircle2 className="ml-auto h-4 w-4" />}
+      </span>
     </button>
   );
 }
