@@ -17,7 +17,6 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { isTauri } from "../lib/ipc";
 import type { ScreenId } from "../lib/types";
-import { IconBox } from "./ui";
 import type { Tone } from "./ui";
 
 interface NavEntry {
@@ -96,7 +95,12 @@ export function Shell({
       >
         {heading && (
           <header className="mx-auto mb-5 flex w-full max-w-[1180px] items-center gap-3.5">
-            <IconBox icon={heading.icon} tone={heading.tone} size="lg" />
+            <span
+              className="grad-tile grid h-12 w-12 shrink-0 place-items-center rounded-[14px]"
+              data-tone={heading.tone}
+            >
+              <heading.icon className="h-6 w-6" />
+            </span>
             <div>
               <h1 className="type-display text-[22px] font-bold leading-7 text-ink">
                 {heading.title}

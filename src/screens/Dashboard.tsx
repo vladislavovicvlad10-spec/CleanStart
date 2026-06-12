@@ -30,6 +30,7 @@ interface ModuleCardData {
   title: string;
   description: string;
   icon: LucideIcon;
+  tone: Tone;
   action: string;
   stats: [ModuleStat, ModuleStat];
 }
@@ -136,6 +137,7 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Temp Cleaner",
       description: "Preview safe temp files, then send them to the Recycle Bin.",
       icon: Droplets,
+      tone: "accent",
       action: "Preview temp files",
       stats: [
         {
@@ -153,6 +155,7 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Startup Analyzer",
       description: "Review what launches with Windows. Disable reversibly.",
       icon: Rocket,
+      tone: "violet",
       action: "Review startup",
       stats: [
         {
@@ -173,6 +176,7 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Disk Analyzer",
       description: "See which profile folders use the most space. Read-only.",
       icon: HardDrive,
+      tone: "warning",
       action: "Analyze disk usage",
       stats: [
         {
@@ -192,6 +196,7 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
       title: "Activity Log",
       description: "Every scan and cleanup, logged on this PC only.",
       icon: Activity,
+      tone: "neutral",
       action: "Open history",
       stats: [
         {
@@ -464,6 +469,7 @@ function ModuleCard({
   return (
     <Card
       className="spot-card animate-rise group flex cursor-pointer flex-col p-4"
+      data-tone={module.tone}
       style={{ animationDelay: `${delay}ms` }}
       onClick={onOpen}
       onMouseMove={trackSpot}
@@ -477,8 +483,11 @@ function ModuleCard({
         }
       }}
     >
-      <span className="icon-bezel grid h-11 w-11 place-items-center rounded-xl bg-edge/[0.07] ring-1 ring-edge/15 transition-colors duration-200 group-hover:bg-accent/10 group-hover:ring-accent/25">
-        <Icon className="h-5 w-5 text-muted transition-colors duration-200 group-hover:text-accent" />
+      <span
+        className="grad-tile grid h-11 w-11 place-items-center rounded-xl"
+        data-tone={module.tone}
+      >
+        <Icon className="h-5 w-5" />
       </span>
 
       <h3 className="type-display mt-3.5 text-[15px] font-bold text-ink">{module.title}</h3>

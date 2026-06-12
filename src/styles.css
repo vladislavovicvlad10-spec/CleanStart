@@ -17,69 +17,72 @@
 
 :root,
 :root[data-theme="dark"] {
-  --c-bg: 5 5 7;
-  --c-surface: 12 13 16;
-  --c-surface2: 18 19 24;
-  --c-surface3: 26 28 34;
-  --c-ink: 237 240 244;
-  --c-muted: 132 140 152;
-  --c-edge: 148 156 170;
-  --c-accent: 190 242 60;
-  --c-accent-strong: 154 205 30;
-  --c-violet: 158 197 255;
-  --c-violet-strong: 125 170 240;
-  --c-success: 110 231 183;
-  --c-warning: 235 179 75;
-  --c-danger: 244 113 113;
+  --c-bg: 9 12 24;
+  --c-surface: 16 20 38;
+  --c-surface2: 22 27 50;
+  --c-surface3: 31 37 66;
+  --c-ink: 233 237 250;
+  --c-muted: 139 148 176;
+  --c-edge: 148 158 196;
+  --c-accent: 56 189 248;
+  --c-accent-strong: 14 165 233;
+  --c-violet: 167 139 250;
+  --c-violet-strong: 139 92 246;
+  --c-success: 52 211 153;
+  --c-warning: 251 191 36;
+  --c-danger: 248 113 113;
+
+  /* Brand gradient endpoints — indigo into cyan. */
+  --grad-a: 99 102 241;
+  --grad-b: 34 211 238;
 
   /* Atmosphere */
-  --bg-glow-a: rgb(190 242 60 / 0.05);
-  --bg-glow-b: rgb(158 197 255 / 0.03);
-  --noise-opacity: 0.028;
+  --bg-glow-a: rgb(99 102 241 / 0.1);
+  --bg-glow-b: rgb(34 211 238 / 0.06);
+  --noise-opacity: 0.024;
   --hairline: rgb(255 255 255 / 0.07);
   --hairline-strong: rgb(255 255 255 / 0.13);
-  --card-topline: rgb(255 255 255 / 0.06);
-  --card-sheen: rgb(255 255 255 / 0.016);
-  --spot: rgb(190 242 60 / 0.07);
-  --spot-border: rgb(190 242 60 / 0.35);
+  --card-topline: rgb(255 255 255 / 0.07);
+  --card-sheen: rgb(255 255 255 / 0.025);
+  --spot: rgb(56 189 248 / 0.07);
+  --spot-border: rgb(56 189 248 / 0.4);
 
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --c-bg: 246 246 244;
+  --c-bg: 243 245 251;
   --c-surface: 255 255 255;
-  --c-surface2: 247 247 245;
-  --c-surface3: 238 238 235;
-  --c-ink: 17 19 23;
-  --c-muted: 105 112 122;
-  --c-edge: 60 66 76;
-  --c-accent: 90 124 15;
-  --c-accent-strong: 70 98 10;
-  --c-violet: 70 110 180;
-  --c-violet-strong: 50 90 160;
-  --c-success: 16 140 90;
-  --c-warning: 170 110 20;
-  --c-danger: 210 50 50;
+  --c-surface2: 245 247 252;
+  --c-surface3: 234 238 248;
+  --c-ink: 16 20 38;
+  --c-muted: 90 100 128;
+  --c-edge: 55 65 100;
+  --c-accent: 2 132 199;
+  --c-accent-strong: 3 105 161;
+  --c-violet: 109 40 217;
+  --c-violet-strong: 91 33 182;
+  --c-success: 5 150 105;
+  --c-warning: 180 83 9;
+  --c-danger: 220 38 38;
 
-  --bg-glow-a: rgb(120 160 30 / 0.05);
-  --bg-glow-b: rgb(70 110 180 / 0.03);
-  --noise-opacity: 0.018;
-  --hairline: rgb(17 19 23 / 0.08);
-  --hairline-strong: rgb(17 19 23 / 0.16);
+  --grad-a: 79 70 229;
+  --grad-b: 8 145 178;
+
+  --bg-glow-a: rgb(79 70 229 / 0.07);
+  --bg-glow-b: rgb(8 145 178 / 0.05);
+  --noise-opacity: 0.015;
+  --hairline: rgb(16 20 38 / 0.08);
+  --hairline-strong: rgb(16 20 38 / 0.16);
   --card-topline: rgb(255 255 255 / 0.7);
   --card-sheen: rgb(255 255 255 / 0.4);
-  --spot: rgb(120 160 30 / 0.07);
-  --spot-border: rgb(90 124 15 / 0.4);
+  --spot: rgb(2 132 199 / 0.06);
+  --spot-border: rgb(2 132 199 / 0.4);
 
   color-scheme: light;
 }
 
-/* The lime button is the same in both themes — black text on electric lime. */
 :root {
-  --lime: 190 242 60;
-  --lime-deep: 158 214 36;
-
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-spring: cubic-bezier(0.34, 1.35, 0.45, 1);
@@ -509,22 +512,27 @@ button:disabled {
 }
 
 /* Buttons ------------------------------------------------------------------
-   Primary: electric lime pill, black text, in both themes. The shine sweep
-   is a parked light bar that crosses on hover (transform-only). */
+   Primary: the brand gradient (indigo into cyan), white text, colored
+   shadow. The shine sweep is a parked light bar that crosses on hover
+   (transform-only). */
 
 .btn-primary {
   position: relative;
   overflow: hidden;
-  color: rgb(10 12 8);
-  background: rgb(var(--lime));
+  color: #fff;
+  background-image: linear-gradient(
+    120deg,
+    rgb(var(--grad-a)),
+    rgb(var(--grad-b))
+  );
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
     0 1px 2px rgba(0, 0, 0, 0.4),
-    0 8px 24px -10px rgb(var(--lime) / 0.55);
+    0 8px 24px -10px rgb(var(--grad-a) / 0.6);
   transition:
     transform 140ms var(--ease-out-strong),
     box-shadow 200ms ease,
-    background-color 200ms ease;
+    filter 200ms ease;
 }
 
 .btn-primary .btn-shine {
@@ -546,11 +554,11 @@ button:disabled {
 
 @media (hover: hover) and (pointer: fine) {
   .btn-primary:hover:not(:disabled) {
-    background: rgb(var(--lime-deep));
+    filter: brightness(1.1);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.4),
+      inset 0 1px 0 rgb(255 255 255 / 0.3),
       0 1px 2px rgba(0, 0, 0, 0.4),
-      0 10px 32px -10px rgb(var(--lime) / 0.7);
+      0 10px 32px -10px rgb(var(--grad-b) / 0.6);
   }
 
   .btn-primary:hover:not(:disabled) .btn-shine {
@@ -638,6 +646,75 @@ button:disabled {
     rgb(var(--c-accent))
   );
   box-shadow: 0 0 12px -3px rgb(var(--c-accent) / 0.5);
+}
+
+/* Gradient module tiles — macOS-settings-style icon plates. Each module owns
+   a gradient; the glyph is always white. Inner top light keeps them "glassy". */
+
+.grad-tile {
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    inset 0 -1px 0 rgb(0 0 0 / 0.2),
+    0 4px 12px -4px var(--tile-shadow, rgb(0 0 0 / 0.5));
+}
+
+.grad-tile[data-tone="accent"] {
+  background-image: linear-gradient(135deg, #38bdf8, #0284c7);
+  --tile-shadow: rgb(56 189 248 / 0.45);
+}
+
+.grad-tile[data-tone="violet"] {
+  background-image: linear-gradient(135deg, #a78bfa, #7c3aed);
+  --tile-shadow: rgb(167 139 250 / 0.45);
+}
+
+.grad-tile[data-tone="warning"] {
+  background-image: linear-gradient(135deg, #fbbf24, #d97706);
+  --tile-shadow: rgb(251 191 36 / 0.4);
+}
+
+.grad-tile[data-tone="neutral"] {
+  background-image: linear-gradient(135deg, #94a3b8, #475569);
+  --tile-shadow: rgb(148 163 184 / 0.35);
+}
+
+.grad-tile[data-tone="success"] {
+  background-image: linear-gradient(135deg, #34d399, #059669);
+  --tile-shadow: rgb(52 211 153 / 0.4);
+}
+
+.grad-tile[data-tone="danger"] {
+  background-image: linear-gradient(135deg, #f87171, #dc2626);
+  --tile-shadow: rgb(248 113 113 / 0.4);
+}
+
+/* Per-module colored hover shadow on spotlight cards. */
+@media (hover: hover) and (pointer: fine) {
+  .spot-card[data-tone="accent"]:hover {
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 24px 48px -20px rgb(56 189 248 / 0.3);
+  }
+  .spot-card[data-tone="violet"]:hover {
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 24px 48px -20px rgb(167 139 250 / 0.3);
+  }
+  .spot-card[data-tone="warning"]:hover {
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 24px 48px -20px rgb(251 191 36 / 0.28);
+  }
+  .spot-card[data-tone="neutral"]:hover {
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 24px 48px -20px rgb(148 163 184 / 0.28);
+  }
 }
 
 /* Icon tile — monochrome, machined. Accent appears only on the icon glyph. */

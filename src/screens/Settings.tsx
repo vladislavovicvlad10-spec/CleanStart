@@ -270,12 +270,12 @@ function ThemeOption({
       <span
         aria-hidden="true"
         className="block px-3 pt-3"
-        style={{ background: dark ? "rgb(8 11 15)" : "rgb(241 244 249)" }}
+        style={{ background: dark ? "rgb(9 12 24)" : "rgb(243 245 251)" }}
       >
         <span
           className="block rounded-t-lg p-2"
           style={{
-            background: dark ? "rgb(16 21 28)" : "rgb(255 255 255)",
+            background: dark ? "rgb(16 20 38)" : "rgb(255 255 255)",
             boxShadow: dark
               ? "inset 0 1px 0 rgb(255 255 255 / 0.05)"
               : "inset 0 1px 0 rgb(255 255 255 / 0.65), 0 0 0 1px rgb(15 23 38 / 0.06)",
@@ -283,16 +283,20 @@ function ThemeOption({
         >
           <span
             className="block h-1.5 w-10 rounded-full"
-            style={{ background: dark ? "rgb(233 239 246)" : "rgb(15 23 38)", opacity: 0.85 }}
+            style={{ background: dark ? "rgb(233 237 250)" : "rgb(16 20 38)", opacity: 0.85 }}
           />
           <span
             className="mt-1.5 block h-1 w-16 rounded-full"
-            style={{ background: dark ? "rgb(141 154 171)" : "rgb(82 98 122)", opacity: 0.6 }}
+            style={{ background: dark ? "rgb(139 148 176)" : "rgb(90 100 128)", opacity: 0.6 }}
           />
           <span className="mt-2 flex items-center gap-1 pb-0.5">
             <span
               className="block h-2.5 w-7 rounded-sm"
-              style={{ background: dark ? "rgb(45 212 191)" : "rgb(13 148 136)" }}
+              style={{
+                backgroundImage: dark
+                  ? "linear-gradient(120deg, rgb(99 102 241), rgb(34 211 238))"
+                  : "linear-gradient(120deg, rgb(79 70 229), rgb(8 145 178))",
+              }}
             />
             <span
               className="block h-2.5 w-7 rounded-sm"
