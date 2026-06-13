@@ -249,10 +249,11 @@ export function StartupAnalyzerScreen() {
               <span>Status</span>
               <span className="text-right">Startup</span>
             </div>
-            {filtered.map((entry) => (
+            {filtered.map((entry, index) => (
               <StartupRow
                 key={entry.id}
                 entry={entry}
+                index={index}
                 onRequestToggle={(enabled) => setPending({ entry, enabled })}
               />
             ))}
@@ -270,15 +271,18 @@ export function StartupAnalyzerScreen() {
 
 function StartupRow({
   entry,
+  index,
   onRequestToggle,
 }: {
   entry: StartupEntry;
+  index: number;
   onRequestToggle: (enabled: boolean) => void;
 }) {
   return (
     <div
+      style={{ ["--i" as string]: Math.min(index, 14) }}
       className={clsx(
-        "data-row grid min-h-[56px] grid-cols-[minmax(260px,1.7fr)_180px_110px_90px] items-center px-4 py-2",
+        "data-row row-stagger grid min-h-[56px] grid-cols-[minmax(260px,1.7fr)_180px_110px_90px] items-center px-4 py-2",
         !entry.enabled && "opacity-75",
       )}
     >

@@ -11,13 +11,20 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 import clsx from "clsx";
 import { api, isTauri } from "../lib/ipc";
 import { formatBytes, formatRelative } from "../lib/format";
+import {
+  onParallaxLeave,
+  onParallaxMove,
+  onTiltEnter,
+  onTiltLeave,
+  onTiltMove,
+  prefersReducedMotion,
+} from "../lib/motion";
 import type { ActivityEntry, ScreenId } from "../lib/types";
-import { Button, Card, IconBox, Pill } from "../components/ui";
+import { Card, Pill } from "../components/ui";
 import type { Tone } from "../components/ui";
 
 interface ModuleStat {
@@ -44,32 +51,24 @@ const STATUS_TONE: Record<ActivityEntry["status"], Tone> = {
 
 const DASH = "—";
 
-/** Animate a number from 0 to `target` over ~700ms. Instant under
-    prefers-reduced-motion and outside the desktop shell (no data anyway). */
+/** Count a number from 0 to `target` (~750ms, ease-out-quart). Instant under
+    reduced motion. Used for the hero's reclaimed-space metric. */
 function useCountUp(target: number): number {
   const [display, setDisplay] = useState(0);
   const frame = useRef<number>();
 
   useEffect(() => {
-    if (target <= 0) {
-      setDisplay(target);
-      return;
-    }
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+    if (target <= 0 || prefersReducedMotion()) {
       setDisplay(target);
       return;
     }
     const started = performance.now();
-    const duration = 700;
+    const duration = 750;
     const tick = (now: number) => {
       const t = Math.min((now - started) / duration, 1);
-      // ease-out-quart — fast start, settles gently into the real number.
       const eased = 1 - Math.pow(1 - t, 4);
       setDisplay(Math.round(target * eased));
-      if (t < 1) {
-        frame.current = requestAnimationFrame(tick);
-      }
+      if (t < 1) frame.current = requestAnimationFrame(tick);
     };
     frame.current = requestAnimationFrame(tick);
     return () => {
@@ -78,15 +77,6 @@ function useCountUp(target: number): number {
   }, [target]);
 
   return display;
-}
-
-/** Writes cursor coordinates (px) onto the element as --mx / --my for the
-    spotlight border. Direct style writes — no React state, no re-renders. */
-function trackSpot(event: ReactMouseEvent<HTMLElement>) {
-  const el = event.currentTarget;
-  const rect = el.getBoundingClientRect();
-  el.style.setProperty("--mx", `${event.clientX - rect.left}px`);
-  el.style.setProperty("--my", `${event.clientY - rect.top}px`);
 }
 
 export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId) => void }) {
@@ -117,18 +107,10 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
 
     const startupEntries = byKind("startup");
     const diskEntries = byKind("disk");
-
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const lastWeekCount = history.filter((entry) => entry.timestampMs >= weekAgo).length;
 
-    return {
-      totalFreed,
-      lastCleanup,
-      lastScan,
-      startupEntries,
-      diskEntries,
-      lastWeekCount,
-    };
+    return { totalFreed, lastCleanup, lastScan, startupEntries, diskEntries, lastWeekCount };
   }, [history]);
 
   const modules: ModuleCardData[] = [
@@ -225,13 +207,13 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
           <ModuleCard
             key={module.id}
             module={module}
-            delay={180 + index * 70}
+            delay={200 + index * 80}
             onOpen={() => onNavigate(module.id)}
           />
         ))}
       </section>
 
-      <Card className="animate-rise p-5" style={{ animationDelay: "480ms" }}>
+      <Card className="animate-rise p-5" style={{ animationDelay: "540ms" }}>
         <div className="mb-3 flex items-center justify-between">
           <h3 className="type-display text-[15px] font-bold text-ink">Recent activity</h3>
           {history.length > 0 && (
@@ -249,8 +231,12 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
           </p>
         ) : (
           <div className="divide-y divide-edge/10">
-            {history.slice(0, 5).map((entry) => (
-              <div key={entry.id} className="flex items-center gap-3 py-2.5">
+            {history.slice(0, 5).map((entry, index) => (
+              <div
+                key={entry.id}
+                className="row-stagger flex items-center gap-3 py-2.5"
+                style={{ ["--i" as string]: index }}
+              >
                 <span
                   className={clsx(
                     "h-1.5 w-1.5 shrink-0 rounded-full",
@@ -283,10 +269,11 @@ export function DashboardScreen({ onNavigate }: { onNavigate: (screen: ScreenId)
 }
 
 /* Hero ----------------------------------------------------------------------
-   A black instrument panel. Left: the promise in Space Grotesk and the one
-   lime action on screen. Right: the radar — the scanning metaphor made
-   literal, a slow lime sweep over hairline rings. The stats strip is part of
-   the panel's base so live numbers read as the instrument's readout. */
+   A frosted instrument panel floating over the mesh. Background layers
+   parallax against the cursor at different rates; the headline reveals with a
+   variable-weight animation (thin -> bold). Right side is the radar. The
+   readout strip is fused into the panel base so live numbers read as the
+   instrument's display. */
 
 function Hero({
   totalFreed,
@@ -302,13 +289,17 @@ function Hero({
   const animatedFreed = useCountUp(totalFreed);
 
   return (
-    <section className="hero-panel animate-rise rounded-2xl border border-edge/10">
-      <div className="hero-field" aria-hidden="true" />
-      <div className="hero-grid" aria-hidden="true" />
+    <section
+      className="hero-panel animate-rise rounded-[20px] border border-edge/10"
+      onMouseMove={onParallaxMove}
+      onMouseLeave={onParallaxLeave}
+    >
+      <div className="hero-layer l-back" aria-hidden="true" />
+      <div className="hero-layer l-grid" aria-hidden="true" />
 
       <div className="flex items-center justify-between gap-8 px-8 pt-7">
         <div className="max-w-[600px] pb-3">
-          <h2 className="type-display text-[34px] font-bold leading-[1.08] text-ink">
+          <h2 className="hero-title type-display text-[34px] leading-[1.08] text-ink">
             Your PC, kept clean.
             <br />
             <span className="text-accent">Transparently.</span>
@@ -318,9 +309,14 @@ function Hero({
             Recycle Bin, personal folders are off-limits, and every action is logged locally.
           </p>
           <div className="mt-5 flex items-center gap-3">
-            <Button size="md" icon={Droplets} onClick={() => onNavigate("temp")}>
+            <button
+              onClick={() => onNavigate("temp")}
+              className="btn-primary inline-flex h-9 items-center justify-center gap-2 rounded-full px-[18px] text-sm font-semibold"
+            >
+              <span className="btn-shine" aria-hidden="true" />
+              <Droplets className="h-4 w-4" />
               Preview temp files
-            </Button>
+            </button>
             <div className="flex items-center gap-2">
               <Pill tone="neutral">
                 <ShieldCheck className="h-3 w-3 text-success" /> Preview-first
@@ -335,7 +331,6 @@ function Hero({
         <Radar />
       </div>
 
-      {/* Readout strip — part of the instrument's base. */}
       <div className="mt-5 grid grid-cols-3 divide-x divide-edge/10 border-t border-edge/10">
         <HeroMetric
           icon={Sparkles}
@@ -388,7 +383,12 @@ function HeroMetric({
         <Icon className={clsx("h-5 w-5", highlight ? "text-accent" : "text-muted")} />
       </span>
       <div className="min-w-0">
-        <div className="type-display truncate text-[21px] font-bold leading-6 tabular-nums text-ink">
+        <div
+          className={clsx(
+            "stat-number truncate text-[21px] font-bold leading-6 text-ink",
+            highlight && "[text-shadow:0_0_18px_rgb(var(--c-accent)/0.4)]",
+          )}
+        >
           {value}
         </div>
         <div className="mt-0.5 truncate text-xs font-medium text-muted">
@@ -400,21 +400,17 @@ function HeroMetric({
   );
 }
 
-/* The radar: hairline concentric rings, a crosshair, a slow lime sweep beam,
-   and three blips that brighten as the beam passes. Decorative, aria-hidden,
-   fully stilled under reduced motion. */
+/* The radar: hairline rings, crosshair, slow cyan sweep, and blips that
+   brighten as the beam passes. Decorative, aria-hidden, stilled on reduce. */
 
 function Radar() {
   return (
     <div className="relative hidden h-[210px] w-[250px] shrink-0 lg:block" aria-hidden="true">
-      {/* Ambient lime bloom behind the dish */}
-      <div className="absolute right-4 top-1/2 h-[210px] w-[210px] -translate-y-1/2 rounded-full bg-accent/[0.07] blur-3xl" />
+      <div className="absolute right-4 top-1/2 h-[210px] w-[210px] -translate-y-1/2 rounded-full bg-accent/[0.08] blur-3xl" />
 
       <div className="absolute right-6 top-1/2 h-[196px] w-[196px] -translate-y-1/2 overflow-hidden rounded-full">
-        {/* Sweep beam */}
         <div className="radar-sweep" />
 
-        {/* Rings + crosshair */}
         <svg viewBox="0 0 196 196" className="absolute inset-0 h-full w-full">
           <circle cx="98" cy="98" r="96" fill="none" stroke="rgb(var(--c-edge) / 0.16)" strokeWidth="1" />
           <circle cx="98" cy="98" r="68" fill="none" stroke="rgb(var(--c-edge) / 0.13)" strokeWidth="1" />
@@ -423,7 +419,6 @@ function Radar() {
           <line x1="2" y1="98" x2="194" y2="98" stroke="rgb(var(--c-edge) / 0.08)" strokeWidth="1" />
         </svg>
 
-        {/* Blips — phase-offset so each lights up as the beam passes it. */}
         <span
           className="radar-blip absolute left-[128px] top-[44px] h-[5px] w-[5px] rounded-full bg-accent shadow-[0_0_10px_rgb(var(--c-accent)/0.9)]"
           style={{ animationDelay: "-5.0s" }}
@@ -437,12 +432,10 @@ function Radar() {
           style={{ animationDelay: "-0.6s" }}
         />
 
-        {/* Center hub */}
         <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_rgb(var(--c-accent)/0.9)]" />
       </div>
 
-      {/* Status chip pinned to the dish */}
-      <div className="absolute bottom-2 right-10 flex items-center gap-1.5 rounded-full border border-edge/15 bg-surface/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted backdrop-blur">
+      <div className="absolute bottom-2 right-10 flex items-center gap-1.5 rounded-full border border-edge/15 bg-surface/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted backdrop-blur">
         <span className="h-1.5 w-1.5 rounded-full bg-success" />
         System protected
       </div>
@@ -451,10 +444,10 @@ function Radar() {
 }
 
 /* Module cards ----------------------------------------------------------------
-   Monochrome instruments: machined icon tile, Space Grotesk title, two live
-   stats over a hairline, and a quiet CTA row whose arrow chip flips to lime
-   on hover. The card's border lights up around the cursor (spotlight ring)
-   and the surface lifts on a spring. */
+   Glassy instruments that tilt toward the cursor in true 3D. The gradient
+   icon tile, title and CTA float on Z so depth separates under tilt. The
+   hairline border lights up around the cursor, a shimmer crosses once on
+   hover, and the drop shadow takes the module's color. */
 
 function ModuleCard({
   module,
@@ -467,53 +460,61 @@ function ModuleCard({
 }) {
   const Icon = module.icon;
   return (
-    <Card
-      className="spot-card animate-rise group flex cursor-pointer flex-col p-4"
-      data-tone={module.tone}
-      style={{ animationDelay: `${delay}ms` }}
-      onClick={onOpen}
-      onMouseMove={trackSpot}
-      role="button"
-      tabIndex={0}
-      aria-label={`${module.title}: ${module.action}`}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onOpen();
-        }
-      }}
-    >
-      <span
-        className="grad-tile grid h-11 w-11 place-items-center rounded-xl"
+    <div className="animate-rise" style={{ animationDelay: `${delay}ms`, perspective: "1000px" }}>
+      <div
+        className="tilt-card group flex cursor-pointer flex-col rounded-[20px] border border-edge/10 p-4"
         data-tone={module.tone}
+        onClick={onOpen}
+        onMouseEnter={onTiltEnter}
+        onMouseMove={onTiltMove}
+        onMouseLeave={onTiltLeave}
+        role="button"
+        tabIndex={0}
+        aria-label={`${module.title}: ${module.action}`}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onOpen();
+          }
+        }}
       >
-        <Icon className="h-5 w-5" />
-      </span>
+        <span className="card-glow" aria-hidden="true" />
+        <span className="card-shimmer" aria-hidden="true" />
 
-      <h3 className="type-display mt-3.5 text-[15px] font-bold text-ink">{module.title}</h3>
-      <p className="mt-1 min-h-[36px] text-xs leading-[18px] text-muted">
-        {module.description}
-      </p>
-
-      <div className="mt-3 grid grid-cols-2 gap-3 border-t border-edge/10 pt-3">
-        {module.stats.map((stat) => (
-          <div key={stat.label} className="min-w-0">
-            <div className="type-display truncate text-[15px] font-bold tabular-nums text-ink">
-              {stat.value}
-            </div>
-            <div className="mt-0.5 truncate text-[11px] font-medium text-muted">
-              {stat.label}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <span className="mt-4 inline-flex h-9 w-full items-center justify-between rounded-full bg-edge/[0.07] pl-4 pr-1.5 text-[13px] font-semibold text-ink ring-1 ring-edge/15 transition-colors duration-200 group-hover:bg-edge/10 group-hover:ring-edge/25">
-        {module.action}
-        <span className="grid h-6 w-6 place-items-center rounded-full bg-edge/15 text-ink transition-all duration-200 [transition-timing-function:var(--ease-spring)] group-hover:translate-x-0.5 group-hover:bg-accent group-hover:text-black">
-          <ArrowUpRight className="h-3.5 w-3.5" />
+        <span
+          className="grad-tile tilt-z relative z-[1] grid h-12 w-12 place-items-center rounded-[14px]"
+          data-tone={module.tone}
+        >
+          <Icon className="h-6 w-6" />
         </span>
-      </span>
-    </Card>
+
+        <h3 className="tilt-z-sm relative z-[1] mt-3.5 text-[15px] font-bold text-ink type-display">
+          {module.title}
+        </h3>
+        <p className="relative z-[1] mt-1 min-h-[36px] text-xs leading-[18px] text-muted">
+          {module.description}
+        </p>
+
+        <div className="relative z-[1] mt-3 grid grid-cols-2 gap-3 border-t border-edge/10 pt-3">
+          {module.stats.map((stat) => (
+            <div key={stat.label} className="min-w-0">
+              <div className="stat-number truncate text-[15px] font-bold text-ink">
+                {stat.value}
+              </div>
+              <div className="mt-0.5 truncate text-[11px] font-medium text-muted">
+                {stat.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <span className="tilt-z-sm relative z-[1] mt-4 inline-flex h-9 w-full items-center justify-between rounded-xl bg-edge/[0.07] pl-4 pr-1.5 text-[13px] font-semibold text-ink ring-1 ring-edge/15 transition-colors duration-200 group-hover:bg-edge/10 group-hover:ring-edge/25">
+          {module.action}
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-edge/15 text-ink transition-all duration-200 [transition-timing-function:var(--ease-spring)] group-hover:translate-x-0.5 group-hover:bg-accent group-hover:text-black">
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </span>
+        </span>
+      </div>
+    </div>
   );
 }

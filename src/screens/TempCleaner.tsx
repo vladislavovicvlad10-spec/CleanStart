@@ -478,8 +478,14 @@ export function TempCleanerScreen() {
               <span>Items</span>
               <span>Path</span>
             </div>
-            {filteredItems.map((item) => (
-              <ItemRow key={item.id} item={item} busy={busy} onToggle={toggleItem} />
+            {filteredItems.map((item, index) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                index={index}
+                busy={busy}
+                onToggle={toggleItem}
+              />
             ))}
           </div>
         )}
@@ -524,10 +530,12 @@ export function TempCleanerScreen() {
 
 function ItemRow({
   item,
+  index,
   busy,
   onToggle,
 }: {
   item: SelectableItem;
+  index: number;
   busy: boolean;
   onToggle: (id: string, selected: boolean) => void;
 }) {
@@ -535,8 +543,9 @@ function ItemRow({
   return (
     <div
       data-selected={item.selected && !item.status}
+      style={{ ["--i" as string]: Math.min(index, 14) }}
       className={clsx(
-        "data-row grid min-h-[52px] grid-cols-[44px_minmax(240px,1.6fr)_120px_90px_80px_minmax(180px,1fr)] items-center px-4 py-1.5 text-sm",
+        "data-row row-stagger grid min-h-[52px] grid-cols-[44px_minmax(240px,1.6fr)_120px_90px_80px_minmax(180px,1fr)] items-center px-4 py-1.5 text-sm",
         item.status === "failed" && "bg-danger/5",
         item.status === "skipped" && "bg-warning/5",
       )}

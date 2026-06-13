@@ -381,14 +381,25 @@ export function StatTile({
   tone?: Tone;
   delay?: number;
 }) {
+  const Icon = icon;
+  const glowByTone: Record<Tone, string> = {
+    accent: "[text-shadow:0_0_18px_rgb(var(--c-accent)/0.35)]",
+    violet: "[text-shadow:0_0_18px_rgb(var(--c-violet)/0.35)]",
+    success: "[text-shadow:0_0_18px_rgb(var(--c-success)/0.3)]",
+    warning: "[text-shadow:0_0_18px_rgb(var(--c-warning)/0.3)]",
+    danger: "[text-shadow:0_0_18px_rgb(var(--c-danger)/0.3)]",
+    neutral: "",
+  };
   return (
     <Card
       className="animate-rise flex items-center gap-3.5 p-4"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <IconBox icon={icon} tone={tone} size="md" />
+      <span className="grad-tile grid h-10 w-10 shrink-0 place-items-center rounded-xl" data-tone={tone}>
+        <Icon className="h-5 w-5" />
+      </span>
       <div className="min-w-0">
-        <div className="type-display truncate text-[22px] font-bold leading-7 tabular-nums text-ink">
+        <div className={clsx("stat-number truncate text-[22px] font-bold leading-7 text-ink", glowByTone[tone])}>
           {value}
         </div>
         <div className="mt-0.5 truncate text-xs font-medium text-muted">
@@ -431,7 +442,7 @@ export function Modal({
 
   return (
     <div
-      className="animate-fade fixed inset-0 z-[70] grid place-items-center bg-black/55 px-6 backdrop-blur-[2px]"
+      className="animate-fade fixed inset-0 z-[var(--z-modal-backdrop)] grid place-items-center bg-black/60 px-6 backdrop-blur-[3px]"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -441,7 +452,7 @@ export function Modal({
         aria-modal="true"
         aria-label={title}
         className={clsx(
-          "animate-pop card-topline w-full rounded-2xl border border-edge/15 bg-surface p-5 shadow-pop",
+          "animate-pop z-[var(--z-modal)] w-full rounded-[20px] border border-edge/15 bg-surface p-5 shadow-pop [box-shadow:inset_0_1px_0_var(--card-topline),0_30px_70px_-20px_rgba(0,0,0,0.7)]",
           wide ? "max-w-[640px]" : "max-w-[480px]",
         )}
       >

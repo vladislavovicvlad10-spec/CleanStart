@@ -5,25 +5,30 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   CleanStart design tokens — "premium minimal" reboot.
+   CleanStart — "aurora instrument" design language.
 
-   One idea: OLED-black monochrome surfaces, hairline borders, and a single
-   electric lime accent. No per-module rainbow — identity comes from type,
-   icons and light. Semantic colors (success / warning / danger) stay muted
-   so the lime is always the loudest thing on screen.
+   Deep indigo-navy base lit by a slow animated gradient mesh. Surfaces are
+   translucent so they pick up the colored light behind them (real depth, no
+   heavy backdrop-filter on scrolling content). Module identity is carried by
+   gradient icon tiles + colored light, never flat paint. One brand gradient
+   (indigo -> cyan) for primary actions.
 
-   Shape system: cards 16px, controls 10px, buttons & pills full-round.
+   Radius system is deliberate, not uniform:
+     6px  inputs / small chips
+     12px controls, list tiles
+     20px cards, panels
+     full pills, toggles, the primary CTA
 --------------------------------------------------------------------------- */
 
 :root,
 :root[data-theme="dark"] {
-  --c-bg: 9 12 24;
-  --c-surface: 16 20 38;
-  --c-surface2: 22 27 50;
-  --c-surface3: 31 37 66;
-  --c-ink: 233 237 250;
-  --c-muted: 139 148 176;
-  --c-edge: 148 158 196;
+  --c-bg: 8 11 22;
+  --c-surface: 17 21 40;
+  --c-surface2: 23 28 52;
+  --c-surface3: 32 39 70;
+  --c-ink: 234 238 250;
+  --c-muted: 146 156 186;
+  --c-edge: 150 162 202;
   --c-accent: 56 189 248;
   --c-accent-strong: 14 165 233;
   --c-violet: 167 139 250;
@@ -36,28 +41,33 @@
   --grad-a: 99 102 241;
   --grad-b: 34 211 238;
 
-  /* Atmosphere */
-  --bg-glow-a: rgb(99 102 241 / 0.1);
-  --bg-glow-b: rgb(34 211 238 / 0.06);
-  --noise-opacity: 0.024;
-  --hairline: rgb(255 255 255 / 0.07);
-  --hairline-strong: rgb(255 255 255 / 0.13);
-  --card-topline: rgb(255 255 255 / 0.07);
-  --card-sheen: rgb(255 255 255 / 0.025);
-  --spot: rgb(56 189 248 / 0.07);
-  --spot-border: rgb(56 189 248 / 0.4);
+  /* Mesh blob colors */
+  --mesh-1: rgb(99 102 241 / 0.5);
+  --mesh-2: rgb(34 211 238 / 0.32);
+  --mesh-3: rgb(167 139 250 / 0.34);
+  --mesh-4: rgb(14 165 233 / 0.3);
+
+  --noise-opacity: 0.026;
+  --hairline: rgb(255 255 255 / 0.08);
+  --hairline-strong: rgb(255 255 255 / 0.16);
+  --card-topline: rgb(255 255 255 / 0.1);
+  --card-sheen: rgb(255 255 255 / 0.03);
+  --surface-glass: rgb(17 21 40 / 0.62);
+  --surface-glass-2: rgb(23 28 52 / 0.55);
+  --spot: rgb(56 189 248 / 0.1);
+  --spot-border: rgb(99 165 250 / 0.55);
 
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --c-bg: 243 245 251;
+  --c-bg: 240 243 251;
   --c-surface: 255 255 255;
   --c-surface2: 245 247 252;
-  --c-surface3: 234 238 248;
-  --c-ink: 16 20 38;
-  --c-muted: 90 100 128;
-  --c-edge: 55 65 100;
+  --c-surface3: 233 238 248;
+  --c-ink: 15 20 38;
+  --c-muted: 88 98 126;
+  --c-edge: 52 62 96;
   --c-accent: 2 132 199;
   --c-accent-strong: 3 105 161;
   --c-violet: 109 40 217;
@@ -69,15 +79,20 @@
   --grad-a: 79 70 229;
   --grad-b: 8 145 178;
 
-  --bg-glow-a: rgb(79 70 229 / 0.07);
-  --bg-glow-b: rgb(8 145 178 / 0.05);
-  --noise-opacity: 0.015;
-  --hairline: rgb(16 20 38 / 0.08);
-  --hairline-strong: rgb(16 20 38 / 0.16);
-  --card-topline: rgb(255 255 255 / 0.7);
-  --card-sheen: rgb(255 255 255 / 0.4);
-  --spot: rgb(2 132 199 / 0.06);
-  --spot-border: rgb(2 132 199 / 0.4);
+  --mesh-1: rgb(79 70 229 / 0.18);
+  --mesh-2: rgb(8 145 178 / 0.16);
+  --mesh-3: rgb(139 92 246 / 0.14);
+  --mesh-4: rgb(14 165 233 / 0.14);
+
+  --noise-opacity: 0.014;
+  --hairline: rgb(15 20 38 / 0.09);
+  --hairline-strong: rgb(15 20 38 / 0.18);
+  --card-topline: rgb(255 255 255 / 0.75);
+  --card-sheen: rgb(255 255 255 / 0.45);
+  --surface-glass: rgb(255 255 255 / 0.72);
+  --surface-glass-2: rgb(245 247 252 / 0.7);
+  --spot: rgb(2 132 199 / 0.08);
+  --spot-border: rgb(2 132 199 / 0.45);
 
   color-scheme: light;
 }
@@ -85,7 +100,23 @@
 :root {
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-spring: cubic-bezier(0.34, 1.35, 0.45, 1);
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.4, 1);
+
+  /* Semantic z-index scale */
+  --z-mesh: 0;
+  --z-base: 1;
+  --z-sticky: 20;
+  --z-grain: 60;
+  --z-modal-backdrop: 70;
+  --z-modal: 71;
+  --z-toast: 80;
+}
+
+/* Variable-font weight axis — used for the hero headline reveal. */
+@property --wght {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 700;
 }
 
 * {
@@ -102,10 +133,7 @@ body {
   min-width: 1100px;
   min-height: 680px;
   overflow: hidden;
-  background:
-    radial-gradient(1000px 600px at 14% -14%, var(--bg-glow-a), transparent 60%),
-    radial-gradient(900px 520px at 88% -10%, var(--bg-glow-b), transparent 60%),
-    rgb(var(--c-bg));
+  background: rgb(var(--c-bg));
   color: rgb(var(--c-ink));
   font-family:
     "Segoe UI Variable Text",
@@ -119,13 +147,12 @@ body {
   user-select: none;
 }
 
-/* Film grain — slightly stronger than before, it is what makes true black
-   read as material instead of void. Fixed + pointer-events-none. */
+/* Film grain — keeps the deep base reading as material, not a flat fill. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--z-grain);
   pointer-events: none;
   opacity: var(--noise-opacity);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -154,16 +181,121 @@ button:disabled {
 }
 
 :focus-visible {
-  outline: 2px solid rgb(var(--c-accent) / 0.8);
-  outline-offset: 2px;
-  border-radius: 6px;
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgb(var(--c-bg)),
+    0 0 0 4px rgb(var(--c-accent) / 0.7);
+  border-radius: 8px;
 }
 
-/* Display type — Space Grotesk carries the brand voice in headings and big
-   numbers; body stays native Segoe for Windows-perfect rendering. */
+/* Display + numeric type ---------------------------------------------------- */
+
 .type-display {
   font-family: "Space Grotesk Variable", "Segoe UI", system-ui, sans-serif;
   letter-spacing: -0.025em;
+}
+
+/* Mono figures with a faint accent glow — data reads as data. */
+.stat-number {
+  font-family: "Space Grotesk Variable", "Cascadia Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ===========================================================================
+   Animated gradient mesh background
+   Four blurred blobs drifting on independent slow loops. Fixed layer behind
+   all app content; surfaces are translucent so they catch this colored light.
+=========================================================================== */
+
+.app-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-mesh);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.app-mesh::after {
+  /* Vignette so edges sink into the base color. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 120% at 50% 30%,
+    transparent 40%,
+    rgb(var(--c-bg) / 0.6) 100%
+  );
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  will-change: transform;
+}
+
+.mesh-blob.b1 {
+  top: -16%;
+  left: -8%;
+  width: 46vw;
+  height: 46vw;
+  background: var(--mesh-1);
+  animation: mesh-drift-1 26s var(--ease-in-out-strong) infinite alternate;
+}
+
+.mesh-blob.b2 {
+  top: -10%;
+  right: -10%;
+  width: 40vw;
+  height: 40vw;
+  background: var(--mesh-2);
+  animation: mesh-drift-2 32s var(--ease-in-out-strong) infinite alternate;
+}
+
+.mesh-blob.b3 {
+  bottom: -22%;
+  left: 22%;
+  width: 50vw;
+  height: 50vw;
+  background: var(--mesh-3);
+  animation: mesh-drift-3 38s var(--ease-in-out-strong) infinite alternate;
+}
+
+.mesh-blob.b4 {
+  bottom: -18%;
+  right: 6%;
+  width: 34vw;
+  height: 34vw;
+  background: var(--mesh-4);
+  animation: mesh-drift-1 30s var(--ease-in-out-strong) infinite alternate-reverse;
+}
+
+@keyframes mesh-drift-1 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(8vw, 6vh, 0) scale(1.15);
+  }
+}
+
+@keyframes mesh-drift-2 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-7vw, 9vh, 0) scale(0.92);
+  }
+}
+
+@keyframes mesh-drift-3 {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.95);
+  }
+  to {
+    transform: translate3d(6vw, -7vh, 0) scale(1.18);
+  }
 }
 
 /* Scrollbars ------------------------------------------------------------- */
@@ -191,55 +323,94 @@ button:disabled {
   background: transparent;
 }
 
-/* Top navigation ------------------------------------------------------------
-   Quiet monochrome tabs; the active one is an inverted pill (ink on light /
-   light on ink) — the most expensive-looking treatment is plain contrast. */
+/* Top navigation — liquid spring indicator ----------------------------------
+   A single pill slides (translateX + scaleX) behind the active tab with a
+   gentle overshoot. GPU-friendly: the base element is 1px wide, scaled. */
+
+.nav-rail {
+  position: relative;
+}
+
+.nav-indicator {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 32px;
+  width: 1px;
+  margin-top: -16px;
+  border-radius: 9999px;
+  background: rgb(var(--c-ink));
+  box-shadow: 0 2px 12px -2px rgb(0 0 0 / 0.5);
+  transform-origin: left center;
+  transform: translateX(var(--nav-x, 0)) scaleX(var(--nav-w, 0));
+  transition: transform 480ms var(--ease-spring);
+  pointer-events: none;
+}
 
 .nav-pill {
+  position: relative;
+  z-index: var(--z-base);
   transition:
-    background-color 160ms ease,
-    color 160ms ease,
+    color 200ms ease,
     transform 140ms var(--ease-out-strong);
 }
 
 .nav-pill:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .nav-pill:active {
-    transform: none;
-  }
-}
+/* ===========================================================================
+   Cards, glass and depth
+=========================================================================== */
 
-/* Cards ------------------------------------------------------------------- */
-
+/* Translucent surface that catches the mesh light + a top hairline. */
 .card-topline {
+  position: relative;
   background-image: linear-gradient(180deg, var(--card-sheen), transparent 40%);
+  background-color: var(--surface-glass);
   box-shadow:
     inset 0 1px 0 var(--card-topline),
     0 1px 2px rgba(0, 0, 0, 0.3),
-    0 12px 32px -16px rgba(0, 0, 0, 0.5);
+    0 16px 40px -24px rgba(0, 0, 0, 0.6);
 }
 
-/* Spotlight cards -------------------------------------------------------------
-   The premium move: the card's hairline border lights up around the cursor,
-   and a faint lime wash follows inside. Coordinates (--mx / --my, in px)
-   are written directly on the element by a tiny mousemove handler.
+/* Real glass — reserved for non-scroll-critical chrome (hero, top/status bar,
+   modal). backdrop-filter samples the mesh behind for true frosted depth. */
+.glass-strong {
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+}
 
-   Implementation: ::before paints a radial gradient and is masked to a 1px
-   border ring (padding-box / border-box XOR), ::after is the interior wash. */
+/* 3D tilt card -----------------------------------------------------------
+   The element rotates toward the cursor (set in JS, max ~7deg) and lifts on
+   Z. Children with .tilt-z float above the surface for parallax depth.
+   Returns home on a longer spring when the cursor leaves. */
 
-.spot-card {
+.tilt-card {
   position: relative;
   overflow: hidden;
-  isolation: isolate;
-  transition:
-    transform 220ms var(--ease-spring),
-    box-shadow 200ms ease;
+  transform-style: preserve-3d;
+  transition: transform 520ms var(--ease-spring);
+  background-image: linear-gradient(180deg, var(--card-sheen), transparent 42%);
+  background-color: var(--surface-glass);
+  box-shadow:
+    inset 0 1px 0 var(--card-topline),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 16px 40px -26px rgba(0, 0, 0, 0.6);
 }
 
-.spot-card::before {
+.tilt-z {
+  transform: translateZ(28px);
+}
+
+.tilt-z-sm {
+  transform: translateZ(16px);
+}
+
+/* Gradient hairline border that brightens around the cursor (spotlight). The
+   ::before paints a radial highlight masked to a 1px ring. */
+.tilt-card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -247,11 +418,11 @@ button:disabled {
   padding: 1px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 250ms ease;
+  transition: opacity 280ms ease;
   background: radial-gradient(
-    220px 220px at var(--mx, 50%) var(--my, 50%),
+    240px 240px at var(--mx, 50%) var(--my, 50%),
     var(--spot-border),
-    transparent 72%
+    transparent 70%
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -263,99 +434,144 @@ button:disabled {
   mask-composite: exclude;
 }
 
-.spot-card::after {
-  content: "";
+/* Interior cursor wash + a one-pass shimmer sweep. */
+.tilt-card .card-glow {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 250ms ease;
+  transition: opacity 280ms ease;
   background: radial-gradient(
-    320px 240px at var(--mx, 50%) var(--my, 50%),
+    340px 260px at var(--mx, 50%) var(--my, 50%),
     var(--spot),
     transparent 70%
   );
 }
 
+.tilt-card .card-shimmer {
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  left: -30%;
+  width: 32%;
+  z-index: 0;
+  pointer-events: none;
+  transform: translateX(-180%) skewX(-18deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.06),
+    transparent
+  );
+  transition: transform 760ms var(--ease-out-strong);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .spot-card:hover {
-    transform: translateY(-3px);
+  .tilt-card:hover::before,
+  .tilt-card:hover .card-glow {
+    opacity: 1;
+  }
+
+  .tilt-card:hover .card-shimmer {
+    transform: translateX(460%) skewX(-18deg);
+  }
+
+  .tilt-card[data-tone="accent"]:hover {
     box-shadow:
       inset 0 1px 0 var(--card-topline),
       0 1px 2px rgba(0, 0, 0, 0.3),
-      0 24px 48px -20px rgba(0, 0, 0, 0.65);
+      0 28px 56px -26px rgb(56 189 248 / 0.4);
   }
-
-  .spot-card:hover::before,
-  .spot-card:hover::after {
-    opacity: 1;
+  .tilt-card[data-tone="violet"]:hover {
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 28px 56px -26px rgb(167 139 250 / 0.4);
+  }
+  .tilt-card[data-tone="warning"]:hover {
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 28px 56px -26px rgb(251 191 36 / 0.36);
+  }
+  .tilt-card[data-tone="neutral"]:hover {
+    box-shadow:
+      inset 0 1px 0 var(--card-topline),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 28px 56px -26px rgb(150 162 202 / 0.34);
   }
 }
 
-.spot-card:active {
-  transform: translateY(-1px) scale(0.99);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .spot-card,
-  .spot-card:hover,
-  .spot-card:active {
-    transform: none;
-  }
-}
-
-/* Hero ----------------------------------------------------------------------
-   A black instrument panel: hairline engineering grid fading out radially,
-   one lime field glow, and the radar visual on the right. */
+/* ===========================================================================
+   Hero — layered parallax instrument panel
+=========================================================================== */
 
 .hero-panel {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background:
-    linear-gradient(180deg, var(--card-sheen), transparent 45%),
-    rgb(var(--c-surface));
+  background-image: linear-gradient(180deg, var(--card-sheen), transparent 46%);
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
   box-shadow:
     inset 0 1px 0 var(--card-topline),
     0 1px 2px rgba(0, 0, 0, 0.3),
-    0 24px 64px -28px rgba(0, 0, 0, 0.7);
+    0 30px 70px -34px rgba(0, 0, 0, 0.75);
 }
 
-.hero-field {
+/* Parallax layers respond to --px / --py (set in JS, range ~-1..1). Each layer
+   uses a different multiplier so depth separates on cursor move. */
+.hero-layer {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  transition: transform 300ms var(--ease-out-strong);
+}
+
+.hero-layer.l-back {
+  transform: translate3d(calc(var(--px, 0) * 10px), calc(var(--py, 0) * 8px), 0);
   background:
-    radial-gradient(520px 320px at 82% 30%, rgb(var(--c-accent) / 0.07), transparent 65%),
-    radial-gradient(480px 360px at 8% 110%, rgb(var(--c-accent) / 0.04), transparent 60%);
+    radial-gradient(520px 320px at 80% 26%, rgb(var(--c-accent) / 0.1), transparent 64%),
+    radial-gradient(460px 360px at 6% 108%, rgb(var(--grad-a) / 0.12), transparent 60%);
 }
 
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
+.hero-layer.l-grid {
+  transform: translate3d(calc(var(--px, 0) * 18px), calc(var(--py, 0) * 14px), 0);
   background-image:
     linear-gradient(var(--hairline) 1px, transparent 1px),
     linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
-  background-size: 48px 48px;
-  -webkit-mask-image: radial-gradient(
-    80% 120% at 75% 35%,
-    black 25%,
-    transparent 75%
-  );
-  mask-image: radial-gradient(80% 120% at 75% 35%, black 25%, transparent 75%);
-  opacity: 0.6;
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(78% 120% at 76% 36%, black 24%, transparent 74%);
+  mask-image: radial-gradient(78% 120% at 76% 36%, black 24%, transparent 74%);
+  opacity: 0.7;
 }
 
-/* Radar ----------------------------------------------------------------------
-   The brand visual: concentric hairline rings with a slow lime sweep, the
-   scanning metaphor made literal. The sweep is a conic gradient rotating at
-   6s/turn; blips brighten as the beam passes (phase-offset opacity loops).
-   Everything stills under reduced motion. */
+/* Hero headline — variable weight reveal (thin -> bold) + fade + blur. */
+.hero-title {
+  font-variation-settings: "wght" var(--wght);
+  animation: wght-reveal 0.85s var(--ease-out-strong) both;
+}
+
+@keyframes wght-reveal {
+  from {
+    --wght: 360;
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(8px);
+  }
+  to {
+    --wght: 700;
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+/* Radar ---------------------------------------------------------------------- */
 
 @keyframes radar-sweep {
   from {
@@ -372,8 +588,8 @@ button:disabled {
   border-radius: 999px;
   background: conic-gradient(
     from 0deg,
-    rgb(var(--c-accent) / 0.32) 0deg,
-    rgb(var(--c-accent) / 0.07) 52deg,
+    rgb(var(--c-accent) / 0.34) 0deg,
+    rgb(var(--c-accent) / 0.08) 52deg,
     transparent 96deg
   );
   animation: radar-sweep 6s linear infinite;
@@ -394,27 +610,20 @@ button:disabled {
   animation: blip 6s linear infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .radar-sweep,
-  .radar-blip {
-    animation: none;
-  }
-  .radar-blip {
-    opacity: 0.6;
-  }
-}
+/* ===========================================================================
+   Motion — entrances
+=========================================================================== */
 
-/* Motion ------------------------------------------------------------------ */
-
-@keyframes rise {
+/* The premium entrance: scale + blur + opacity + lift together. */
+@keyframes rise3d {
   from {
     opacity: 0;
-    transform: translateY(12px);
-    filter: blur(4px);
+    transform: translateY(16px) scale(0.965);
+    filter: blur(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     filter: blur(0);
   }
 }
@@ -431,12 +640,26 @@ button:disabled {
 @keyframes pop {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.97);
+    transform: translateY(10px) scale(0.96);
     filter: blur(2px);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Screen transition — fade + slide up + de-blur. */
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
     filter: blur(0);
   }
 }
@@ -464,7 +687,11 @@ button:disabled {
 }
 
 .animate-rise {
-  animation: rise 0.5s var(--ease-out-strong) both;
+  animation: rise3d 0.55s var(--ease-out-strong) both;
+}
+
+.animate-screen {
+  animation: screen-in 0.42s var(--ease-out-strong) both;
 }
 
 .animate-fade {
@@ -472,13 +699,20 @@ button:disabled {
 }
 
 .animate-pop {
-  animation: pop 0.26s var(--ease-out-strong) both;
+  animation: pop 0.28s var(--ease-out-strong) both;
 }
 
 .animate-toast {
   animation: toast-in 0.3s var(--ease-out-strong) both;
 }
 
+/* Staggered list rows — set --i on each row; delay scales off it. */
+.row-stagger {
+  animation: rise3d 0.4s var(--ease-out-strong) both;
+  animation-delay: calc(var(--i, 0) * 26ms);
+}
+
+/* Indeterminate progress — a glowing comet sweeping the track. */
 .progress-indeterminate {
   position: relative;
   overflow: hidden;
@@ -488,47 +722,68 @@ button:disabled {
   content: "";
   position: absolute;
   inset: 0;
-  width: 40%;
+  width: 36%;
   border-radius: inherit;
   background: linear-gradient(
     90deg,
     transparent,
     rgb(var(--c-accent)),
+    rgb(var(--c-accent)),
     transparent
   );
-  animation: shimmer 1.4s ease-in-out infinite;
+  box-shadow: 0 0 14px 2px rgb(var(--c-accent) / 0.6);
+  animation: shimmer 1.3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mesh-blob,
+  .radar-sweep,
+  .radar-blip,
+  .hero-title {
+    animation: none !important;
+  }
+  .radar-blip {
+    opacity: 0.6;
+  }
+  .hero-title {
+    --wght: 700;
+  }
   .animate-rise,
+  .animate-screen,
   .animate-fade,
   .animate-pop,
-  .animate-toast {
-    animation: none;
+  .animate-toast,
+  .row-stagger {
+    animation: fade 0.2s ease-out both;
+  }
+  .hero-layer,
+  .nav-indicator,
+  .tilt-card {
+    transition: none;
   }
   .progress-indeterminate::after {
     animation-duration: 3s;
   }
+  .tilt-card .card-shimmer,
+  .tilt-card:hover .card-shimmer {
+    transition: none;
+    transform: translateX(-180%) skewX(-18deg);
+  }
 }
 
-/* Buttons ------------------------------------------------------------------
-   Primary: the brand gradient (indigo into cyan), white text, colored
-   shadow. The shine sweep is a parked light bar that crosses on hover
-   (transform-only). */
+/* ===========================================================================
+   Buttons
+=========================================================================== */
 
 .btn-primary {
   position: relative;
   overflow: hidden;
   color: #fff;
-  background-image: linear-gradient(
-    120deg,
-    rgb(var(--grad-a)),
-    rgb(var(--grad-b))
-  );
+  background-image: linear-gradient(120deg, rgb(var(--grad-a)), rgb(var(--grad-b)));
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
     0 1px 2px rgba(0, 0, 0, 0.4),
-    0 8px 24px -10px rgb(var(--grad-a) / 0.6);
+    0 10px 26px -10px rgb(var(--grad-a) / 0.65);
   transition:
     transform 140ms var(--ease-out-strong),
     box-shadow 200ms ease,
@@ -543,24 +798,18 @@ button:disabled {
   width: 30%;
   pointer-events: none;
   transform: translateX(-160%) skewX(-20deg);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgb(255 255 255 / 0.35),
-    transparent
-  );
-  transition: transform 600ms var(--ease-out-strong);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.4), transparent);
+  transition: transform 620ms var(--ease-out-strong);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .btn-primary:hover:not(:disabled) {
     filter: brightness(1.1);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.3),
+      inset 0 1px 0 rgb(255 255 255 / 0.32),
       0 1px 2px rgba(0, 0, 0, 0.4),
-      0 10px 32px -10px rgb(var(--grad-b) / 0.6);
+      0 14px 34px -10px rgb(var(--grad-b) / 0.7);
   }
-
   .btn-primary:hover:not(:disabled) .btn-shine {
     transform: translateX(520%) skewX(-20deg);
   }
@@ -595,7 +844,9 @@ button:disabled {
   }
 }
 
-/* Data rows ----------------------------------------------------------------- */
+/* ===========================================================================
+   Data rows, gradient tiles, bars, timeline
+=========================================================================== */
 
 .data-row {
   transition: background-color 120ms ease, box-shadow 120ms ease;
@@ -603,16 +854,73 @@ button:disabled {
 
 @media (hover: hover) and (pointer: fine) {
   .data-row:hover {
-    background-color: rgb(var(--c-surface2) / 0.7);
+    background-color: rgb(var(--c-surface2) / 0.55);
   }
 }
 
 .data-row[data-selected="true"] {
-  background-color: rgb(var(--c-accent) / 0.05);
-  box-shadow: inset 2px 0 0 rgb(var(--c-accent) / 0.6);
+  background-color: rgb(var(--c-accent) / 0.06);
+  box-shadow: inset 2px 0 0 rgb(var(--c-accent) / 0.65);
 }
 
-/* Activity timeline rail ---------------------------------------------------- */
+/* Gradient module tiles — glassy icon plates, white glyphs, colored drop. */
+.grad-tile {
+  position: relative;
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.34),
+    inset 0 -2px 4px rgb(0 0 0 / 0.22),
+    0 6px 16px -5px var(--tile-shadow, rgb(0 0 0 / 0.5));
+}
+
+.grad-tile[data-tone="accent"] {
+  background-image: linear-gradient(135deg, #38bdf8, #0369a1);
+  --tile-shadow: rgb(56 189 248 / 0.5);
+}
+.grad-tile[data-tone="violet"] {
+  background-image: linear-gradient(135deg, #a78bfa, #6d28d9);
+  --tile-shadow: rgb(167 139 250 / 0.5);
+}
+.grad-tile[data-tone="warning"] {
+  background-image: linear-gradient(135deg, #fbbf24, #c2570b);
+  --tile-shadow: rgb(251 191 36 / 0.45);
+}
+.grad-tile[data-tone="neutral"] {
+  background-image: linear-gradient(135deg, #94a3b8, #475569);
+  --tile-shadow: rgb(148 163 184 / 0.4);
+}
+.grad-tile[data-tone="success"] {
+  background-image: linear-gradient(135deg, #34d399, #047857);
+  --tile-shadow: rgb(52 211 153 / 0.45);
+}
+.grad-tile[data-tone="danger"] {
+  background-image: linear-gradient(135deg, #f87171, #b91c1c);
+  --tile-shadow: rgb(248 113 113 / 0.45);
+}
+
+.bar-grow {
+  transition: width 0.8s var(--ease-out-strong);
+}
+
+/* Disk usage bar with a bright glowing tip. */
+.disk-bar {
+  position: relative;
+  background-image: linear-gradient(90deg, rgb(var(--c-accent-strong)), rgb(var(--c-accent)));
+  box-shadow: 0 0 14px -2px rgb(var(--c-accent) / 0.6);
+}
+
+.disk-bar::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px 2px rgb(var(--c-accent) / 0.9);
+}
 
 .timeline-rail {
   position: relative;
@@ -621,7 +929,6 @@ button:disabled {
 .timeline-rail::before {
   content: "";
   position: absolute;
-  /* Rows are padded 16px; the 16px status icon centers at x = 24px. */
   left: 23.5px;
   top: 30px;
   bottom: -2px;
@@ -633,95 +940,11 @@ button:disabled {
   display: none;
 }
 
-/* Bars ---------------------------------------------------------------------- */
-
-.bar-grow {
-  transition: width 0.7s var(--ease-out-strong);
-}
-
-.disk-bar {
-  background-image: linear-gradient(
-    90deg,
-    rgb(var(--c-accent-strong)),
-    rgb(var(--c-accent))
-  );
-  box-shadow: 0 0 12px -3px rgb(var(--c-accent) / 0.5);
-}
-
-/* Gradient module tiles — macOS-settings-style icon plates. Each module owns
-   a gradient; the glyph is always white. Inner top light keeps them "glassy". */
-
-.grad-tile {
-  color: #fff;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.3),
-    inset 0 -1px 0 rgb(0 0 0 / 0.2),
-    0 4px 12px -4px var(--tile-shadow, rgb(0 0 0 / 0.5));
-}
-
-.grad-tile[data-tone="accent"] {
-  background-image: linear-gradient(135deg, #38bdf8, #0284c7);
-  --tile-shadow: rgb(56 189 248 / 0.45);
-}
-
-.grad-tile[data-tone="violet"] {
-  background-image: linear-gradient(135deg, #a78bfa, #7c3aed);
-  --tile-shadow: rgb(167 139 250 / 0.45);
-}
-
-.grad-tile[data-tone="warning"] {
-  background-image: linear-gradient(135deg, #fbbf24, #d97706);
-  --tile-shadow: rgb(251 191 36 / 0.4);
-}
-
-.grad-tile[data-tone="neutral"] {
-  background-image: linear-gradient(135deg, #94a3b8, #475569);
-  --tile-shadow: rgb(148 163 184 / 0.35);
-}
-
-.grad-tile[data-tone="success"] {
-  background-image: linear-gradient(135deg, #34d399, #059669);
-  --tile-shadow: rgb(52 211 153 / 0.4);
-}
-
-.grad-tile[data-tone="danger"] {
-  background-image: linear-gradient(135deg, #f87171, #dc2626);
-  --tile-shadow: rgb(248 113 113 / 0.4);
-}
-
-/* Per-module colored hover shadow on spotlight cards. */
-@media (hover: hover) and (pointer: fine) {
-  .spot-card[data-tone="accent"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 24px 48px -20px rgb(56 189 248 / 0.3);
-  }
-  .spot-card[data-tone="violet"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 24px 48px -20px rgb(167 139 250 / 0.3);
-  }
-  .spot-card[data-tone="warning"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 24px 48px -20px rgb(251 191 36 / 0.28);
-  }
-  .spot-card[data-tone="neutral"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 24px 48px -20px rgb(148 163 184 / 0.28);
-  }
-}
-
-/* Icon tile — monochrome, machined. Accent appears only on the icon glyph. */
+/* Icon tile — machined monochrome (used in stat tiles / empty states). */
 .icon-bezel {
   position: relative;
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
     inset 0 -1px 0 rgb(0 0 0 / 0.25),
     0 2px 6px -2px rgb(0 0 0 / 0.5);
 }
