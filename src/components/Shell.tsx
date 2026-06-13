@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useLayoutEffect, useRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { isTauri } from "../lib/ipc";
 import type { ScreenId } from "../lib/types";
 import type { Tone } from "./ui";
@@ -88,7 +88,6 @@ export function Shell({
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden text-ink">
-      <MeshBackground />
       <TopBar activeScreen={activeScreen} onNavigate={onNavigate} />
       <main
         key={activeScreen}
@@ -117,32 +116,19 @@ export function Shell({
   );
 }
 
-/* Animated gradient mesh — fixed layer behind all content. Surfaces are
-   translucent, so they pick up this colored light. */
-function MeshBackground() {
-  return (
-    <div className="app-mesh" aria-hidden="true">
-      <span className="mesh-blob b1" />
-      <span className="mesh-blob b2" />
-      <span className="mesh-blob b3" />
-      <span className="mesh-blob b4" />
-    </div>
-  );
-}
-
-function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
+function LogoMark({ className = "h-8 w-8" }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" className={clsx("shrink-0", className)} aria-hidden="true">
       <defs>
         <linearGradient id="cs-logo" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="rgb(var(--c-accent))" />
-          <stop offset="100%" stopColor="rgb(var(--grad-a))" />
+          <stop offset="100%" stopColor="rgb(var(--c-accent-strong))" />
         </linearGradient>
       </defs>
       <path
         d="M20 3 L34 8.5 V19 C34 28 28 34.5 20 37 C12 34.5 6 28 6 19 V8.5 Z"
         fill="url(#cs-logo)"
-        opacity="0.18"
+        opacity="0.16"
       />
       <path
         d="M20 3 L34 8.5 V19 C34 28 28 34.5 20 37 C12 34.5 6 28 6 19 V8.5 Z"
@@ -170,65 +156,46 @@ function TopBar({
   activeScreen: ScreenId;
   onNavigate: (screen: ScreenId) => void;
 }) {
-  const railRef = useRef<HTMLDivElement>(null);
-  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-
-  // Slide the liquid indicator behind the active tab. Measured against the
-  // rail; written as CSS vars so the spring transition handles the motion.
-  useLayoutEffect(() => {
-    const rail = railRef.current;
-    const button = buttonRefs.current[activeScreen];
-    if (!rail || !button) return;
-
-    const place = () => {
-      const railBox = rail.getBoundingClientRect();
-      const box = button.getBoundingClientRect();
-      rail.style.setProperty("--nav-x", `${box.left - railBox.left}px`);
-      rail.style.setProperty("--nav-w", `${box.width}`);
-    };
-
-    place();
-    window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
-  }, [activeScreen]);
-
   return (
     <header
-      className="glass-strong relative z-[var(--z-sticky)] flex h-[56px] shrink-0 items-stretch justify-between border-b border-edge/10"
+      className="nav-bar relative z-[var(--z-sticky)] flex h-[52px] shrink-0 items-stretch justify-between border-b border-edge/10"
       data-tauri-drag-region
     >
       <div className="flex min-w-0 items-stretch">
-        <div className="flex items-center gap-2.5 pl-5 pr-6" data-tauri-drag-region>
+        <div className="flex items-center gap-2.5 pl-5 pr-7" data-tauri-drag-region>
           <LogoMark />
-          <div className="pointer-events-none flex items-baseline gap-2">
-            <span className="type-display text-[15px] font-bold leading-none text-ink">
+          <div className="pointer-events-none flex items-baseline gap-1.5">
+            <span className="type-display text-[16px] font-bold leading-none text-ink">
               CleanStart
             </span>
-            <span className="text-[10px] font-semibold text-muted/70">v1.0.0</span>
+            <span className="text-[10px] font-semibold text-muted/40">v1.0.0</span>
           </div>
         </div>
 
-        <nav className="nav-rail flex items-center gap-1" aria-label="Main navigation" ref={railRef}>
-          <span className="nav-indicator" aria-hidden="true" />
+        <nav className="flex items-stretch" aria-label="Main navigation">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = item.id === activeScreen;
             return (
               <button
                 key={item.id}
-                ref={(node) => {
-                  buttonRefs.current[item.id] = node;
-                }}
                 data-testid={`nav-${item.id}`}
                 data-active={active}
                 aria-current={active ? "page" : undefined}
                 onClick={() => onNavigate(item.id)}
                 className={clsx(
-                  "nav-pill flex h-8 items-center gap-2 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold",
-                  active ? "text-app" : "text-muted hover:text-ink",
+                  "nav-tab flex items-center gap-2 whitespace-nowrap px-3.5 text-[13px] font-semibold",
+                  active
+                    ? "bg-accent/[0.07] text-ink"
+                    : "text-muted hover:bg-edge/[0.06] hover:text-ink",
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon
+                  className={clsx(
+                    "h-[18px] w-[18px] shrink-0 transition-colors duration-150",
+                    active ? "text-accent" : "text-current",
+                  )}
+                />
                 {item.label}
               </button>
             );
@@ -292,7 +259,7 @@ function WindowControls() {
 
 function StatusBar() {
   return (
-    <footer className="glass-strong relative z-[var(--z-sticky)] flex h-9 shrink-0 items-center justify-between border-t border-edge/10 px-8 text-[11px] font-medium text-muted">
+    <footer className="nav-bar relative z-[var(--z-sticky)] flex h-9 shrink-0 items-center justify-between border-t border-edge/10 px-8 text-[11px] font-medium text-muted">
       <div className="flex items-center gap-2">
         <ShieldCheck className="h-3.5 w-3.5 text-success" />
         <span>Preview-first · Recycle Bin only · Permanent deletion disabled</span>

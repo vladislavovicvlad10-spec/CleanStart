@@ -5,105 +5,99 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   CleanStart — "aurora instrument" design language.
+   CleanStart — "calm instrument" design language.
 
-   Deep indigo-navy base lit by a slow animated gradient mesh. Surfaces are
-   translucent so they pick up the colored light behind them (real depth, no
-   heavy backdrop-filter on scrolling content). Module identity is carried by
-   gradient icon tiles + colored light, never flat paint. One brand gradient
-   (indigo -> cyan) for primary actions.
+   Light is the primary theme: clean cool-white surfaces, hairline borders,
+   one teal accent used only where it means something. Dark is a quiet,
+   neutral companion (deep graphite, no purple-navy) with the same teal
+   surfacing only in details.
 
-   Radius system is deliberate, not uniform:
+   Radius system (deliberate, not uniform):
      6px  inputs / small chips
-     12px controls, list tiles
-     20px cards, panels
+     10px controls
+     16px cards, icon tiles
+     20px panels
      full pills, toggles, the primary CTA
 --------------------------------------------------------------------------- */
 
+/* LIGHT — the default and primary theme. */
 :root,
-:root[data-theme="dark"] {
-  --c-bg: 8 11 22;
-  --c-surface: 17 21 40;
-  --c-surface2: 23 28 52;
-  --c-surface3: 32 39 70;
-  --c-ink: 234 238 250;
-  --c-muted: 146 156 186;
-  --c-edge: 150 162 202;
-  --c-accent: 56 189 248;
-  --c-accent-strong: 14 165 233;
-  --c-violet: 167 139 250;
-  --c-violet-strong: 139 92 246;
-  --c-success: 52 211 153;
-  --c-warning: 251 191 36;
-  --c-danger: 248 113 113;
-
-  /* Brand gradient endpoints — indigo into cyan. */
-  --grad-a: 99 102 241;
-  --grad-b: 34 211 238;
-
-  /* Mesh blob colors */
-  --mesh-1: rgb(99 102 241 / 0.5);
-  --mesh-2: rgb(34 211 238 / 0.32);
-  --mesh-3: rgb(167 139 250 / 0.34);
-  --mesh-4: rgb(14 165 233 / 0.3);
-
-  --noise-opacity: 0.026;
-  --hairline: rgb(255 255 255 / 0.08);
-  --hairline-strong: rgb(255 255 255 / 0.16);
-  --card-topline: rgb(255 255 255 / 0.1);
-  --card-sheen: rgb(255 255 255 / 0.03);
-  --surface-glass: rgb(17 21 40 / 0.62);
-  --surface-glass-2: rgb(23 28 52 / 0.55);
-  --spot: rgb(56 189 248 / 0.1);
-  --spot-border: rgb(99 165 250 / 0.55);
-
-  color-scheme: dark;
-}
-
 :root[data-theme="light"] {
-  --c-bg: 240 243 251;
+  --c-bg: 246 247 249;
   --c-surface: 255 255 255;
-  --c-surface2: 245 247 252;
-  --c-surface3: 233 238 248;
-  --c-ink: 15 20 38;
-  --c-muted: 88 98 126;
-  --c-edge: 52 62 96;
-  --c-accent: 2 132 199;
-  --c-accent-strong: 3 105 161;
-  --c-violet: 109 40 217;
-  --c-violet-strong: 91 33 182;
+  --c-surface2: 246 248 250;
+  --c-surface3: 237 240 244;
+  --c-ink: 17 20 26;
+  --c-muted: 92 102 118;
+  --c-edge: 60 70 86;
+  --c-accent: 13 148 136;
+  --c-accent-strong: 15 118 110;
+  --c-violet: 124 58 237;
+  --c-violet-strong: 109 40 217;
   --c-success: 5 150 105;
   --c-warning: 180 83 9;
   --c-danger: 220 38 38;
 
-  --grad-a: 79 70 229;
-  --grad-b: 8 145 178;
-
-  --mesh-1: rgb(79 70 229 / 0.18);
-  --mesh-2: rgb(8 145 178 / 0.16);
-  --mesh-3: rgb(139 92 246 / 0.14);
-  --mesh-4: rgb(14 165 233 / 0.14);
+  /* CTA solid teal (same hue family in both themes). */
+  --cta-a: 13 148 136;
+  --cta-b: 15 118 110;
 
   --noise-opacity: 0.014;
-  --hairline: rgb(15 20 38 / 0.09);
-  --hairline-strong: rgb(15 20 38 / 0.18);
-  --card-topline: rgb(255 255 255 / 0.75);
-  --card-sheen: rgb(255 255 255 / 0.45);
-  --surface-glass: rgb(255 255 255 / 0.72);
-  --surface-glass-2: rgb(245 247 252 / 0.7);
-  --spot: rgb(2 132 199 / 0.08);
-  --spot-border: rgb(2 132 199 / 0.45);
+  --hairline: rgb(17 20 26 / 0.07);
+  --hairline-strong: rgb(17 20 26 / 0.13);
+  --card-border: rgb(17 20 26 / 0.06);
+  --card-border-hover: rgb(17 20 26 / 0.12);
+  --card-topline: rgb(255 255 255 / 0.8);
+  --card-sheen: rgb(255 255 255 / 0.5);
+  --card-shadow: 0 1px 2px rgb(17 20 26 / 0.04), 0 6px 16px -10px rgb(17 20 26 / 0.12);
+  --card-shadow-hover: 0 2px 4px rgb(17 20 26 / 0.05), 0 14px 28px -12px rgb(17 20 26 / 0.16);
+  --hero-glow: rgb(13 148 136 / 0.1);
+  --nav-glass: rgb(255 255 255 / 0.72);
 
   color-scheme: light;
+}
+
+/* DARK — quiet neutral graphite, accent only in details. */
+:root[data-theme="dark"] {
+  --c-bg: 14 14 17;
+  --c-surface: 22 22 27;
+  --c-surface2: 28 29 35;
+  --c-surface3: 37 38 45;
+  --c-ink: 235 237 242;
+  --c-muted: 151 157 169;
+  --c-edge: 150 157 172;
+  --c-accent: 22 197 175;
+  --c-accent-strong: 13 148 136;
+  --c-violet: 167 139 250;
+  --c-violet-strong: 139 92 246;
+  --c-success: 52 211 153;
+  --c-warning: 234 179 8;
+  --c-danger: 248 113 113;
+
+  --cta-a: 20 184 166;
+  --cta-b: 13 148 136;
+
+  --noise-opacity: 0.03;
+  --hairline: rgb(255 255 255 / 0.06);
+  --hairline-strong: rgb(255 255 255 / 0.12);
+  --card-border: rgb(255 255 255 / 0.06);
+  --card-border-hover: rgb(255 255 255 / 0.12);
+  --card-topline: rgb(255 255 255 / 0.05);
+  --card-sheen: rgb(255 255 255 / 0.018);
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -16px rgb(0 0 0 / 0.6);
+  --card-shadow-hover: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 36px -18px rgb(0 0 0 / 0.7);
+  --hero-glow: rgb(22 197 175 / 0.1);
+  --nav-glass: rgb(22 22 27 / 0.72);
+
+  color-scheme: dark;
 }
 
 :root {
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-spring: cubic-bezier(0.34, 1.45, 0.4, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.45, 1);
 
   /* Semantic z-index scale */
-  --z-mesh: 0;
   --z-base: 1;
   --z-sticky: 20;
   --z-grain: 60;
@@ -116,7 +110,7 @@
 @property --wght {
   syntax: "<number>";
   inherits: false;
-  initial-value: 700;
+  initial-value: 800;
 }
 
 * {
@@ -133,7 +127,11 @@ body {
   min-width: 1100px;
   min-height: 680px;
   overflow: hidden;
-  background: rgb(var(--c-bg));
+  /* Clean base with one barely-there cool glow from the top — no gradient
+     explosion. The hero carries the only real accent light. */
+  background:
+    radial-gradient(900px 460px at 80% -20%, var(--hero-glow), transparent 60%),
+    rgb(var(--c-bg));
   color: rgb(var(--c-ink));
   font-family:
     "Segoe UI Variable Text",
@@ -147,7 +145,7 @@ body {
   user-select: none;
 }
 
-/* Film grain — keeps the deep base reading as material, not a flat fill. */
+/* Fine film grain — only meaningful on dark; near-invisible on light. */
 body::before {
   content: "";
   position: fixed;
@@ -177,7 +175,7 @@ button:disabled {
 }
 
 ::selection {
-  background: rgb(var(--c-accent) / 0.35);
+  background: rgb(var(--c-accent) / 0.28);
 }
 
 :focus-visible {
@@ -192,110 +190,13 @@ button:disabled {
 
 .type-display {
   font-family: "Space Grotesk Variable", "Segoe UI", system-ui, sans-serif;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.022em;
 }
 
-/* Mono figures with a faint accent glow — data reads as data. */
 .stat-number {
   font-family: "Space Grotesk Variable", "Cascadia Mono", ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
-}
-
-/* ===========================================================================
-   Animated gradient mesh background
-   Four blurred blobs drifting on independent slow loops. Fixed layer behind
-   all app content; surfaces are translucent so they catch this colored light.
-=========================================================================== */
-
-.app-mesh {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-mesh);
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.app-mesh::after {
-  /* Vignette so edges sink into the base color. */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    120% 120% at 50% 30%,
-    transparent 40%,
-    rgb(var(--c-bg) / 0.6) 100%
-  );
-}
-
-.mesh-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
-  will-change: transform;
-}
-
-.mesh-blob.b1 {
-  top: -16%;
-  left: -8%;
-  width: 46vw;
-  height: 46vw;
-  background: var(--mesh-1);
-  animation: mesh-drift-1 26s var(--ease-in-out-strong) infinite alternate;
-}
-
-.mesh-blob.b2 {
-  top: -10%;
-  right: -10%;
-  width: 40vw;
-  height: 40vw;
-  background: var(--mesh-2);
-  animation: mesh-drift-2 32s var(--ease-in-out-strong) infinite alternate;
-}
-
-.mesh-blob.b3 {
-  bottom: -22%;
-  left: 22%;
-  width: 50vw;
-  height: 50vw;
-  background: var(--mesh-3);
-  animation: mesh-drift-3 38s var(--ease-in-out-strong) infinite alternate;
-}
-
-.mesh-blob.b4 {
-  bottom: -18%;
-  right: 6%;
-  width: 34vw;
-  height: 34vw;
-  background: var(--mesh-4);
-  animation: mesh-drift-1 30s var(--ease-in-out-strong) infinite alternate-reverse;
-}
-
-@keyframes mesh-drift-1 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(8vw, 6vh, 0) scale(1.15);
-  }
-}
-
-@keyframes mesh-drift-2 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1.05);
-  }
-  to {
-    transform: translate3d(-7vw, 9vh, 0) scale(0.92);
-  }
-}
-
-@keyframes mesh-drift-3 {
-  from {
-    transform: translate3d(0, 0, 0) scale(0.95);
-  }
-  to {
-    transform: translate3d(6vw, -7vh, 0) scale(1.18);
-  }
 }
 
 /* Scrollbars ------------------------------------------------------------- */
@@ -311,130 +212,103 @@ button:disabled {
 }
 
 .clean-scrollbar::-webkit-scrollbar-thumb {
-  background: rgb(var(--c-edge) / 0.25);
+  background: rgb(var(--c-edge) / 0.22);
   border-radius: 999px;
 }
 
 .clean-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--c-edge) / 0.4);
+  background: rgb(var(--c-edge) / 0.36);
 }
 
 .clean-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* Top navigation — liquid spring indicator ----------------------------------
-   A single pill slides (translateX + scaleX) behind the active tab with a
-   gentle overshoot. GPU-friendly: the base element is 1px wide, scaled. */
+/* Top navigation -------------------------------------------------------------
+   Premium tab bar: glass strip, generous tab padding, an active tab carrying
+   both a soft accent-tinted background and a rounded teal underline. */
 
-.nav-rail {
-  position: relative;
+.nav-bar {
+  background: var(--nav-glass);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
 }
 
-.nav-indicator {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  height: 32px;
-  width: 1px;
-  margin-top: -16px;
-  border-radius: 9999px;
-  background: rgb(var(--c-ink));
-  box-shadow: 0 2px 12px -2px rgb(0 0 0 / 0.5);
-  transform-origin: left center;
-  transform: translateX(var(--nav-x, 0)) scaleX(var(--nav-w, 0));
-  transition: transform 480ms var(--ease-spring);
-  pointer-events: none;
-}
-
-.nav-pill {
+.nav-tab {
   position: relative;
-  z-index: var(--z-base);
   transition:
-    color 200ms ease,
+    color 180ms ease,
+    background-color 180ms ease,
     transform 140ms var(--ease-out-strong);
 }
 
-.nav-pill:active {
-  transform: scale(0.95);
+.nav-tab:active {
+  transform: scale(0.96);
+}
+
+/* Rounded teal underline for the active tab — scales in from center. */
+.nav-tab::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 2.5px;
+  border-radius: 999px;
+  background: rgb(var(--c-accent));
+  box-shadow: 0 0 10px rgb(var(--c-accent) / 0.55);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 260ms var(--ease-spring);
+}
+
+.nav-tab[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-tab::after {
+    transition: none;
+  }
 }
 
 /* ===========================================================================
-   Cards, glass and depth
+   Cards
 =========================================================================== */
 
-/* Translucent surface that catches the mesh light + a top hairline. */
 .card-topline {
   position: relative;
-  background-image: linear-gradient(180deg, var(--card-sheen), transparent 40%);
-  background-color: var(--surface-glass);
-  box-shadow:
-    inset 0 1px 0 var(--card-topline),
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 16px 40px -24px rgba(0, 0, 0, 0.6);
+  background-color: rgb(var(--c-surface));
+  background-image: linear-gradient(180deg, var(--card-sheen), transparent 38%);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
-/* Real glass — reserved for non-scroll-critical chrome (hero, top/status bar,
-   modal). backdrop-filter samples the mesh behind for true frosted depth. */
-.glass-strong {
-  background-color: var(--surface-glass);
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-}
-
-/* 3D tilt card -----------------------------------------------------------
-   The element rotates toward the cursor (set in JS, max ~7deg) and lifts on
-   Z. Children with .tilt-z float above the surface for parallax depth.
-   Returns home on a longer spring when the cursor leaves. */
-
+/* Solid surface that tilts gently toward the cursor; border and shadow lift
+   on hover. Used for the dashboard module cards. */
 .tilt-card {
   position: relative;
   overflow: hidden;
   transform-style: preserve-3d;
-  transition: transform 520ms var(--ease-spring);
-  background-image: linear-gradient(180deg, var(--card-sheen), transparent 42%);
-  background-color: var(--surface-glass);
-  box-shadow:
-    inset 0 1px 0 var(--card-topline),
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 16px 40px -26px rgba(0, 0, 0, 0.6);
+  background-color: rgb(var(--c-surface));
+  background-image: linear-gradient(180deg, var(--card-sheen), transparent 40%);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition:
+    transform 500ms var(--ease-spring),
+    border-color 200ms ease,
+    box-shadow 200ms ease;
 }
 
 .tilt-z {
-  transform: translateZ(28px);
+  transform: translateZ(22px);
 }
 
 .tilt-z-sm {
-  transform: translateZ(16px);
+  transform: translateZ(12px);
 }
 
-/* Gradient hairline border that brightens around the cursor (spotlight). The
-   ::before paints a radial highlight masked to a 1px ring. */
-.tilt-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 280ms ease;
-  background: radial-gradient(
-    240px 240px at var(--mx, 50%) var(--my, 50%),
-    var(--spot-border),
-    transparent 70%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-
-/* Interior cursor wash + a one-pass shimmer sweep. */
+/* Spotlight: a soft accent wash that follows the cursor inside the card. */
 .tilt-card .card-glow {
   position: absolute;
   inset: 0;
@@ -444,113 +318,70 @@ button:disabled {
   opacity: 0;
   transition: opacity 280ms ease;
   background: radial-gradient(
-    340px 260px at var(--mx, 50%) var(--my, 50%),
-    var(--spot),
+    320px 240px at var(--mx, 50%) var(--my, 50%),
+    rgb(var(--c-accent) / 0.07),
     transparent 70%
   );
 }
 
-.tilt-card .card-shimmer {
-  position: absolute;
-  top: -25%;
-  bottom: -25%;
-  left: -30%;
-  width: 32%;
-  z-index: 0;
-  pointer-events: none;
-  transform: translateX(-180%) skewX(-18deg);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgb(255 255 255 / 0.06),
-    transparent
-  );
-  transition: transform 760ms var(--ease-out-strong);
-}
-
 @media (hover: hover) and (pointer: fine) {
-  .tilt-card:hover::before,
+  .tilt-card:hover {
+    border-color: var(--card-border-hover);
+    box-shadow: var(--card-shadow-hover);
+  }
   .tilt-card:hover .card-glow {
     opacity: 1;
   }
+}
 
-  .tilt-card:hover .card-shimmer {
-    transform: translateX(460%) skewX(-18deg);
-  }
-
-  .tilt-card[data-tone="accent"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 28px 56px -26px rgb(56 189 248 / 0.4);
-  }
-  .tilt-card[data-tone="violet"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 28px 56px -26px rgb(167 139 250 / 0.4);
-  }
-  .tilt-card[data-tone="warning"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 28px 56px -26px rgb(251 191 36 / 0.36);
-  }
-  .tilt-card[data-tone="neutral"]:hover {
-    box-shadow:
-      inset 0 1px 0 var(--card-topline),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 28px 56px -26px rgb(150 162 202 / 0.34);
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card {
+    transition: border-color 200ms ease, box-shadow 200ms ease;
   }
 }
 
 /* ===========================================================================
-   Hero — layered parallax instrument panel
+   Hero — clean typographic panel
 =========================================================================== */
 
 .hero-panel {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background-image: linear-gradient(180deg, var(--card-sheen), transparent 46%);
-  background-color: var(--surface-glass);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  box-shadow:
-    inset 0 1px 0 var(--card-topline),
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 30px 70px -34px rgba(0, 0, 0, 0.75);
+  background-color: rgb(var(--c-surface));
+  background-image: linear-gradient(180deg, var(--card-sheen), transparent 44%);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
-/* Parallax layers respond to --px / --py (set in JS, range ~-1..1). Each layer
-   uses a different multiplier so depth separates on cursor move. */
-.hero-layer {
+/* Localized teal glow behind the headline only — the single accent moment. */
+.hero-glow-layer {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  transition: transform 300ms var(--ease-out-strong);
+  background: radial-gradient(
+    640px 320px at 22% 8%,
+    var(--hero-glow),
+    transparent 62%
+  );
 }
 
-.hero-layer.l-back {
-  transform: translate3d(calc(var(--px, 0) * 10px), calc(var(--py, 0) * 8px), 0);
-  background:
-    radial-gradient(520px 320px at 80% 26%, rgb(var(--c-accent) / 0.1), transparent 64%),
-    radial-gradient(460px 360px at 6% 108%, rgb(var(--grad-a) / 0.12), transparent 60%);
-}
-
-.hero-layer.l-grid {
-  transform: translate3d(calc(var(--px, 0) * 18px), calc(var(--py, 0) * 14px), 0);
+/* Faint hairline grid, fading out — texture, not decoration. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image:
     linear-gradient(var(--hairline) 1px, transparent 1px),
     linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
   background-size: 46px 46px;
-  -webkit-mask-image: radial-gradient(78% 120% at 76% 36%, black 24%, transparent 74%);
-  mask-image: radial-gradient(78% 120% at 76% 36%, black 24%, transparent 74%);
+  -webkit-mask-image: radial-gradient(80% 130% at 88% 0%, black 12%, transparent 64%);
+  mask-image: radial-gradient(80% 130% at 88% 0%, black 12%, transparent 64%);
   opacity: 0.7;
 }
 
-/* Hero headline — variable weight reveal (thin -> bold) + fade + blur. */
 .hero-title {
   font-variation-settings: "wght" var(--wght);
   animation: wght-reveal 0.85s var(--ease-out-strong) both;
@@ -558,68 +389,28 @@ button:disabled {
 
 @keyframes wght-reveal {
   from {
-    --wght: 360;
+    --wght: 420;
     opacity: 0;
-    filter: blur(8px);
-    transform: translateY(8px);
+    filter: blur(7px);
+    transform: translateY(7px);
   }
   to {
-    --wght: 700;
+    --wght: 800;
     opacity: 1;
     filter: blur(0);
     transform: translateY(0);
   }
 }
 
-/* Radar ---------------------------------------------------------------------- */
-
-@keyframes radar-sweep {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.radar-sweep {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: conic-gradient(
-    from 0deg,
-    rgb(var(--c-accent) / 0.34) 0deg,
-    rgb(var(--c-accent) / 0.08) 52deg,
-    transparent 96deg
-  );
-  animation: radar-sweep 6s linear infinite;
-}
-
-@keyframes blip {
-  0%,
-  78%,
-  100% {
-    opacity: 0.25;
-  }
-  86% {
-    opacity: 1;
-  }
-}
-
-.radar-blip {
-  animation: blip 6s linear infinite;
-}
-
 /* ===========================================================================
    Motion — entrances
 =========================================================================== */
 
-/* The premium entrance: scale + blur + opacity + lift together. */
 @keyframes rise3d {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.965);
-    filter: blur(6px);
+    transform: translateY(14px) scale(0.97);
+    filter: blur(5px);
   }
   to {
     opacity: 1;
@@ -650,12 +441,11 @@ button:disabled {
   }
 }
 
-/* Screen transition — fade + slide up + de-blur. */
 @keyframes screen-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
-    filter: blur(4px);
+    transform: translateY(9px);
+    filter: blur(3px);
   }
   to {
     opacity: 1;
@@ -687,11 +477,11 @@ button:disabled {
 }
 
 .animate-rise {
-  animation: rise3d 0.55s var(--ease-out-strong) both;
+  animation: rise3d 0.5s var(--ease-out-strong) both;
 }
 
 .animate-screen {
-  animation: screen-in 0.42s var(--ease-out-strong) both;
+  animation: screen-in 0.4s var(--ease-out-strong) both;
 }
 
 .animate-fade {
@@ -706,10 +496,9 @@ button:disabled {
   animation: toast-in 0.3s var(--ease-out-strong) both;
 }
 
-/* Staggered list rows — set --i on each row; delay scales off it. */
 .row-stagger {
-  animation: rise3d 0.4s var(--ease-out-strong) both;
-  animation-delay: calc(var(--i, 0) * 26ms);
+  animation: rise3d 0.38s var(--ease-out-strong) both;
+  animation-delay: calc(var(--i, 0) * 24ms);
 }
 
 /* Indeterminate progress — a glowing comet sweeping the track. */
@@ -731,22 +520,14 @@ button:disabled {
     rgb(var(--c-accent)),
     transparent
   );
-  box-shadow: 0 0 14px 2px rgb(var(--c-accent) / 0.6);
+  box-shadow: 0 0 14px 2px rgb(var(--c-accent) / 0.55);
   animation: shimmer 1.3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mesh-blob,
-  .radar-sweep,
-  .radar-blip,
   .hero-title {
-    animation: none !important;
-  }
-  .radar-blip {
-    opacity: 0.6;
-  }
-  .hero-title {
-    --wght: 700;
+    animation: none;
+    --wght: 800;
   }
   .animate-rise,
   .animate-screen,
@@ -756,34 +537,24 @@ button:disabled {
   .row-stagger {
     animation: fade 0.2s ease-out both;
   }
-  .hero-layer,
-  .nav-indicator,
-  .tilt-card {
-    transition: none;
-  }
   .progress-indeterminate::after {
     animation-duration: 3s;
-  }
-  .tilt-card .card-shimmer,
-  .tilt-card:hover .card-shimmer {
-    transition: none;
-    transform: translateX(-180%) skewX(-18deg);
   }
 }
 
 /* ===========================================================================
-   Buttons
+   Buttons — primary is solid teal with a quiet sheen
 =========================================================================== */
 
 .btn-primary {
   position: relative;
   overflow: hidden;
   color: #fff;
-  background-image: linear-gradient(120deg, rgb(var(--grad-a)), rgb(var(--grad-b)));
+  background-image: linear-gradient(180deg, rgb(var(--cta-a)), rgb(var(--cta-b)));
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.28),
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 10px 26px -10px rgb(var(--grad-a) / 0.65);
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    0 1px 2px rgb(0 0 0 / 0.18),
+    0 8px 22px -8px rgb(var(--cta-a) / 0.5);
   transition:
     transform 140ms var(--ease-out-strong),
     box-shadow 200ms ease,
@@ -798,17 +569,17 @@ button:disabled {
   width: 30%;
   pointer-events: none;
   transform: translateX(-160%) skewX(-20deg);
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.38), transparent);
   transition: transform 620ms var(--ease-out-strong);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .btn-primary:hover:not(:disabled) {
-    filter: brightness(1.1);
+    filter: brightness(1.06);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.32),
-      0 1px 2px rgba(0, 0, 0, 0.4),
-      0 14px 34px -10px rgb(var(--grad-b) / 0.7);
+      inset 0 1px 0 rgb(255 255 255 / 0.3),
+      0 1px 2px rgb(0 0 0 / 0.18),
+      0 12px 30px -8px rgb(var(--cta-a) / 0.6);
   }
   .btn-primary:hover:not(:disabled) .btn-shine {
     transform: translateX(520%) skewX(-20deg);
@@ -816,7 +587,7 @@ button:disabled {
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .btn-press {
@@ -829,7 +600,7 @@ button:disabled {
 }
 
 .btn-press:active:not(:disabled) {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -854,59 +625,59 @@ button:disabled {
 
 @media (hover: hover) and (pointer: fine) {
   .data-row:hover {
-    background-color: rgb(var(--c-surface2) / 0.55);
+    background-color: rgb(var(--c-surface2));
   }
 }
 
 .data-row[data-selected="true"] {
-  background-color: rgb(var(--c-accent) / 0.06);
-  box-shadow: inset 2px 0 0 rgb(var(--c-accent) / 0.65);
+  background-color: rgb(var(--c-accent) / 0.07);
+  box-shadow: inset 2px 0 0 rgb(var(--c-accent) / 0.6);
 }
 
-/* Gradient module tiles — glassy icon plates, white glyphs, colored drop. */
+/* Gradient module tiles — icon plates with white glyphs + colored drop. The
+   "accent" tone is teal to match the brand; others keep module identity. */
 .grad-tile {
   position: relative;
   color: #fff;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.34),
-    inset 0 -2px 4px rgb(0 0 0 / 0.22),
-    0 6px 16px -5px var(--tile-shadow, rgb(0 0 0 / 0.5));
+    inset 0 -2px 5px rgb(0 0 0 / 0.18),
+    0 6px 16px -6px var(--tile-shadow, rgb(0 0 0 / 0.4));
 }
 
 .grad-tile[data-tone="accent"] {
-  background-image: linear-gradient(135deg, #38bdf8, #0369a1);
-  --tile-shadow: rgb(56 189 248 / 0.5);
+  background-image: linear-gradient(140deg, #2dd4bf, #0f766e);
+  --tile-shadow: rgb(20 184 166 / 0.45);
 }
 .grad-tile[data-tone="violet"] {
-  background-image: linear-gradient(135deg, #a78bfa, #6d28d9);
-  --tile-shadow: rgb(167 139 250 / 0.5);
+  background-image: linear-gradient(140deg, #a78bfa, #6d28d9);
+  --tile-shadow: rgb(167 139 250 / 0.42);
 }
 .grad-tile[data-tone="warning"] {
-  background-image: linear-gradient(135deg, #fbbf24, #c2570b);
-  --tile-shadow: rgb(251 191 36 / 0.45);
+  background-image: linear-gradient(140deg, #fbbf24, #c2570b);
+  --tile-shadow: rgb(251 191 36 / 0.4);
 }
 .grad-tile[data-tone="neutral"] {
-  background-image: linear-gradient(135deg, #94a3b8, #475569);
-  --tile-shadow: rgb(148 163 184 / 0.4);
+  background-image: linear-gradient(140deg, #94a3b8, #475569);
+  --tile-shadow: rgb(148 163 184 / 0.36);
 }
 .grad-tile[data-tone="success"] {
-  background-image: linear-gradient(135deg, #34d399, #047857);
-  --tile-shadow: rgb(52 211 153 / 0.45);
+  background-image: linear-gradient(140deg, #34d399, #047857);
+  --tile-shadow: rgb(52 211 153 / 0.4);
 }
 .grad-tile[data-tone="danger"] {
-  background-image: linear-gradient(135deg, #f87171, #b91c1c);
-  --tile-shadow: rgb(248 113 113 / 0.45);
+  background-image: linear-gradient(140deg, #f87171, #b91c1c);
+  --tile-shadow: rgb(248 113 113 / 0.4);
 }
 
 .bar-grow {
   transition: width 0.8s var(--ease-out-strong);
 }
 
-/* Disk usage bar with a bright glowing tip. */
 .disk-bar {
   position: relative;
   background-image: linear-gradient(90deg, rgb(var(--c-accent-strong)), rgb(var(--c-accent)));
-  box-shadow: 0 0 14px -2px rgb(var(--c-accent) / 0.6);
+  box-shadow: 0 0 12px -2px rgb(var(--c-accent) / 0.5);
 }
 
 .disk-bar::after {
@@ -919,7 +690,7 @@ button:disabled {
   margin-top: -3px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 0 8px 2px rgb(var(--c-accent) / 0.9);
+  box-shadow: 0 0 8px 2px rgb(var(--c-accent) / 0.85);
 }
 
 .timeline-rail {
@@ -940,18 +711,19 @@ button:disabled {
   display: none;
 }
 
-/* Icon tile — machined monochrome (used in stat tiles / empty states). */
+/* Icon tile — machined monochrome (stat tiles / empty states). */
 .icon-bezel {
   position: relative;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.1),
-    inset 0 -1px 0 rgb(0 0 0 / 0.25),
-    0 2px 6px -2px rgb(0 0 0 / 0.5);
+    inset 0 -1px 0 rgb(0 0 0 / 0.22),
+    0 2px 6px -2px rgb(0 0 0 / 0.4);
 }
 
-:root[data-theme="light"] .icon-bezel {
+:root[data-theme="light"] .icon-bezel,
+:root:not([data-theme="dark"]) .icon-bezel {
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
     inset 0 -1px 0 rgb(0 0 0 / 0.05),
-    0 2px 6px -2px rgb(0 0 0 / 0.12);
+    0 2px 6px -2px rgb(0 0 0 / 0.1);
 }

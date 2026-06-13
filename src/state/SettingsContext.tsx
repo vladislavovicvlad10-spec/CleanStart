@@ -13,7 +13,7 @@ const THEME_STORAGE_KEY = "cleanstart.theme";
 
 const DEFAULT_SETTINGS: AppSettings = {
   moveToRecycleBin: true,
-  theme: "dark",
+  theme: "light",
   launchAtStartup: false,
 };
 
@@ -42,7 +42,7 @@ export function initialTheme(): ThemeId {
   } catch {
     // fall through to default
   }
-  return "dark";
+  return "light";
 }
 
 export function SettingsProvider({ children }: { children: ReactNode }) {

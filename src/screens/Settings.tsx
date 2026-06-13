@@ -66,22 +66,22 @@ export function SettingsScreen() {
       <div className="space-y-4">
         <SettingsCard
           title="Appearance"
-          description="CleanStart is designed dark-first, with a full light theme."
+          description="CleanStart is designed light-first, with a full dark theme."
           delay={0}
         >
           <div className="flex gap-2">
-            <ThemeOption
-              theme="dark"
-              label="Dark"
-              icon={<Moon className="h-4 w-4" />}
-              active={settings.theme === "dark"}
-              onSelect={setTheme}
-            />
             <ThemeOption
               theme="light"
               label="Light"
               icon={<Sun className="h-4 w-4" />}
               active={settings.theme === "light"}
+              onSelect={setTheme}
+            />
+            <ThemeOption
+              theme="dark"
+              label="Dark"
+              icon={<Moon className="h-4 w-4" />}
+              active={settings.theme === "dark"}
               onSelect={setTheme}
             />
           </div>
@@ -270,38 +270,38 @@ function ThemeOption({
       <span
         aria-hidden="true"
         className="block px-3 pt-3"
-        style={{ background: dark ? "rgb(9 12 24)" : "rgb(243 245 251)" }}
+        style={{ background: dark ? "rgb(14 14 17)" : "rgb(246 247 249)" }}
       >
         <span
           className="block rounded-t-lg p-2"
           style={{
-            background: dark ? "rgb(16 20 38)" : "rgb(255 255 255)",
+            background: dark ? "rgb(22 22 27)" : "rgb(255 255 255)",
             boxShadow: dark
               ? "inset 0 1px 0 rgb(255 255 255 / 0.05)"
-              : "inset 0 1px 0 rgb(255 255 255 / 0.65), 0 0 0 1px rgb(15 23 38 / 0.06)",
+              : "inset 0 1px 0 rgb(255 255 255 / 0.8), 0 0 0 1px rgb(17 20 26 / 0.06)",
           }}
         >
           <span
             className="block h-1.5 w-10 rounded-full"
-            style={{ background: dark ? "rgb(233 237 250)" : "rgb(16 20 38)", opacity: 0.85 }}
+            style={{ background: dark ? "rgb(235 237 242)" : "rgb(17 20 26)", opacity: 0.85 }}
           />
           <span
             className="mt-1.5 block h-1 w-16 rounded-full"
-            style={{ background: dark ? "rgb(139 148 176)" : "rgb(90 100 128)", opacity: 0.6 }}
+            style={{ background: dark ? "rgb(151 157 169)" : "rgb(92 102 118)", opacity: 0.6 }}
           />
           <span className="mt-2 flex items-center gap-1 pb-0.5">
             <span
               className="block h-2.5 w-7 rounded-sm"
               style={{
                 backgroundImage: dark
-                  ? "linear-gradient(120deg, rgb(99 102 241), rgb(34 211 238))"
-                  : "linear-gradient(120deg, rgb(79 70 229), rgb(8 145 178))",
+                  ? "linear-gradient(180deg, rgb(20 184 166), rgb(13 148 136))"
+                  : "linear-gradient(180deg, rgb(13 148 136), rgb(15 118 110))",
               }}
             />
             <span
               className="block h-2.5 w-7 rounded-sm"
               style={{
-                background: dark ? "rgb(167 139 250 / 0.45)" : "rgb(124 58 237 / 0.3)",
+                background: dark ? "rgb(167 139 250 / 0.45)" : "rgb(124 58 237 / 0.28)",
               }}
             />
           </span>

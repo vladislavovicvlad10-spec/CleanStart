@@ -17,7 +17,7 @@ export function prefersReducedMotion(): boolean {
   return reduceMotion;
 }
 
-const MAX_TILT_DEG = 7;
+const MAX_TILT_DEG = 5;
 
 /**
  * 3D tilt toward the cursor plus a spotlight position. Rotation is capped at
