@@ -11,7 +11,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import type { LucideIcon } from "lucide-react";
 import clsx from "clsx";
 import { api, isTauri } from "../lib/ipc";
@@ -20,6 +19,7 @@ import { onTiltEnter, onTiltLeave, onTiltMove, prefersReducedMotion } from "../l
 import type { ActivityEntry, ScreenId } from "../lib/types";
 import { Card, Pill } from "../components/ui";
 import type { Tone } from "../components/ui";
+import { HeroGem } from "../components/HeroGem";
 
 interface ModuleStat {
   value: string;
@@ -328,7 +328,7 @@ function Hero({
           </div>
         </div>
 
-        <Crystal />
+        <HeroGem />
       </div>
 
       <div className="mt-7 grid grid-cols-3 divide-x divide-edge/10 border-t border-edge/10">
@@ -395,76 +395,6 @@ function HeroMetric({
           {label}
           {sub && <span className="text-muted/60"> · {sub}</span>}
         </div>
-      </div>
-    </div>
-  );
-}
-
-/* Hero crystal ----------------------------------------------------------------
-   A pure-CSS 3D octahedron gem: two stacked pyramids of clip-path facets
-   under preserve-3d, an inner pulsing core, and orbiting particles. All
-   geometry is data-driven so the faces stay symmetric. Decorative and
-   aria-hidden; CSS pauses every loop under reduced motion. */
-
-// 54.7356deg (acos 1/sqrt3) is the regular-octahedron face angle; 125.2644
-// is its supplement for the lower pyramid. Four of each, rotated 90deg apart.
-const GEM_FACES = [
-  { ry: 0, rx: 54.7356 },
-  { ry: 90, rx: 54.7356 },
-  { ry: 180, rx: 54.7356 },
-  { ry: 270, rx: 54.7356 },
-  { ry: 0, rx: 125.2644 },
-  { ry: 90, rx: 125.2644 },
-  { ry: 180, rx: 125.2644 },
-  { ry: 270, rx: 125.2644 },
-];
-
-const GEM_ORBITS = [
-  { radius: 104, dur: "7s", delay: "0s", size: 5 },
-  { radius: 92, dur: "11s", delay: "-3s", size: 3 },
-  { radius: 116, dur: "9s", delay: "-5s", size: 4 },
-  { radius: 84, dur: "13s", delay: "-1.5s", size: 3 },
-  { radius: 110, dur: "8s", delay: "-6s", size: 4 },
-];
-
-function Crystal() {
-  return (
-    <div className="crystal-stage hidden shrink-0 lg:block" aria-hidden="true">
-      <div className="crystal-float">
-        <div className="crystal-spin">
-          <div className="crystal-wobble">
-            {GEM_FACES.map((face, index) => (
-              <span
-                key={index}
-                className="gem-face"
-                style={
-                  {
-                    "--ry": `${face.ry}deg`,
-                    "--rx": `${face.rx}deg`,
-                  } as CSSProperties
-                }
-              />
-            ))}
-            <span className="gem-core" />
-          </div>
-        </div>
-
-        {GEM_ORBITS.map((orbit, index) => (
-          <span
-            key={index}
-            className="orbit"
-            style={
-              {
-                "--radius": `${orbit.radius}px`,
-                "--dur": orbit.dur,
-                "--delay": orbit.delay,
-                "--size": `${orbit.size}px`,
-              } as React.CSSProperties
-            }
-          >
-            <span className="dot" />
-          </span>
-        ))}
       </div>
     </div>
   );
