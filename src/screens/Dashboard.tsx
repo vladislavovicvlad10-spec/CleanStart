@@ -19,7 +19,7 @@ import { onTiltEnter, onTiltLeave, onTiltMove, prefersReducedMotion } from "../l
 import type { ActivityEntry, ScreenId } from "../lib/types";
 import { Card, Pill } from "../components/ui";
 import type { Tone } from "../components/ui";
-import { HeroGem } from "../components/HeroGem";
+import { HeroOrb } from "../components/HeroOrb";
 
 interface ModuleStat {
   value: string;
@@ -328,7 +328,7 @@ function Hero({
           </div>
         </div>
 
-        <HeroGem />
+        <HeroOrb />
       </div>
 
       <div className="mt-7 grid grid-cols-3 divide-x divide-edge/10 border-t border-edge/10">

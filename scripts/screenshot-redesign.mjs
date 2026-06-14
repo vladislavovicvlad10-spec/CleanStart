@@ -61,6 +61,7 @@ async function heroShot({ theme, file }) {
 await fullShot({ theme: "light", nav: null, file: "redesign-dashboard.png" });
 await fullShot({ theme: "dark", nav: null, file: "redesign-dashboard-dark.png" });
 await fullShot({ theme: "light", nav: "nav-temp", file: "redesign-temp-cleaner.png" });
-await heroShot({ theme: "dark", file: "cleanstart-v1.0.0-hero-gem.png" });
+await heroShot({ theme: "dark", file: "cleanstart-v1.0.0-hero-orb.png" });
+await heroShot({ theme: "light", file: "cleanstart-v1.0.0-hero-orb-light.png" });
 
 await browser.close();
