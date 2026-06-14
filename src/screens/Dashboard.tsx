@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import type { LucideIcon } from "lucide-react";
 import clsx from "clsx";
 import { api, isTauri } from "../lib/ipc";
@@ -296,34 +297,38 @@ function Hero({
       <div className="hero-glow-layer" aria-hidden="true" />
       <div className="hero-grid" aria-hidden="true" />
 
-      <div className="px-8 pt-8">
-        <h2 className="hero-title type-display max-w-[640px] text-[34px] font-extrabold leading-[1.06] text-ink">
-          Your PC, kept clean.
-          <br />
-          <span className="text-accent">Transparently.</span>
-        </h2>
-        <p className="mt-3 max-w-[460px] text-sm leading-6 text-muted">
-          Nothing is deleted without your say-so. Every cleanup goes to the Recycle Bin, and
-          personal folders are always off-limits.
-        </p>
-        <div className="mt-6 flex items-center gap-3">
-          <button
-            onClick={() => onNavigate("temp")}
-            className="btn-primary inline-flex h-11 items-center justify-center gap-2 rounded-full px-6 text-[14px] font-bold"
-          >
-            <span className="btn-shine" aria-hidden="true" />
-            <Droplets className="h-[18px] w-[18px]" />
-            Preview temp files
-          </button>
-          <div className="flex items-center gap-2">
-            <Pill tone="success">
-              <ShieldCheck className="h-3.5 w-3.5" /> Preview-first
-            </Pill>
-            <Pill tone="accent">
-              <Recycle className="h-3.5 w-3.5" /> Recycle Bin only
-            </Pill>
+      <div className="flex items-center justify-between gap-6 px-8 pt-8">
+        <div className="max-w-[600px]">
+          <h2 className="hero-title type-display text-[34px] font-extrabold leading-[1.06] text-ink">
+            Your PC, kept clean.
+            <br />
+            <span className="hero-accent-word">Transparently.</span>
+          </h2>
+          <p className="mt-3 max-w-[460px] text-sm leading-6 text-muted">
+            Nothing is deleted without your say-so. Every cleanup goes to the Recycle Bin, and
+            personal folders are always off-limits.
+          </p>
+          <div className="mt-6 flex items-center gap-3">
+            <button
+              onClick={() => onNavigate("temp")}
+              className="btn-primary inline-flex h-11 items-center justify-center gap-2 rounded-full px-6 text-[14px] font-bold"
+            >
+              <span className="btn-shine" aria-hidden="true" />
+              <Droplets className="h-[18px] w-[18px]" />
+              Preview temp files
+            </button>
+            <div className="flex items-center gap-2">
+              <Pill tone="success">
+                <ShieldCheck className="h-3.5 w-3.5" /> Preview-first
+              </Pill>
+              <Pill tone="accent">
+                <Recycle className="h-3.5 w-3.5" /> Recycle Bin only
+              </Pill>
+            </div>
           </div>
         </div>
+
+        <Crystal />
       </div>
 
       <div className="mt-7 grid grid-cols-3 divide-x divide-edge/10 border-t border-edge/10">
@@ -390,6 +395,76 @@ function HeroMetric({
           {label}
           {sub && <span className="text-muted/60"> · {sub}</span>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* Hero crystal ----------------------------------------------------------------
+   A pure-CSS 3D octahedron gem: two stacked pyramids of clip-path facets
+   under preserve-3d, an inner pulsing core, and orbiting particles. All
+   geometry is data-driven so the faces stay symmetric. Decorative and
+   aria-hidden; CSS pauses every loop under reduced motion. */
+
+// 54.7356deg (acos 1/sqrt3) is the regular-octahedron face angle; 125.2644
+// is its supplement for the lower pyramid. Four of each, rotated 90deg apart.
+const GEM_FACES = [
+  { ry: 0, rx: 54.7356 },
+  { ry: 90, rx: 54.7356 },
+  { ry: 180, rx: 54.7356 },
+  { ry: 270, rx: 54.7356 },
+  { ry: 0, rx: 125.2644 },
+  { ry: 90, rx: 125.2644 },
+  { ry: 180, rx: 125.2644 },
+  { ry: 270, rx: 125.2644 },
+];
+
+const GEM_ORBITS = [
+  { radius: 104, dur: "7s", delay: "0s", size: 5 },
+  { radius: 92, dur: "11s", delay: "-3s", size: 3 },
+  { radius: 116, dur: "9s", delay: "-5s", size: 4 },
+  { radius: 84, dur: "13s", delay: "-1.5s", size: 3 },
+  { radius: 110, dur: "8s", delay: "-6s", size: 4 },
+];
+
+function Crystal() {
+  return (
+    <div className="crystal-stage hidden shrink-0 lg:block" aria-hidden="true">
+      <div className="crystal-float">
+        <div className="crystal-spin">
+          <div className="crystal-wobble">
+            {GEM_FACES.map((face, index) => (
+              <span
+                key={index}
+                className="gem-face"
+                style={
+                  {
+                    "--ry": `${face.ry}deg`,
+                    "--rx": `${face.rx}deg`,
+                  } as CSSProperties
+                }
+              />
+            ))}
+            <span className="gem-core" />
+          </div>
+        </div>
+
+        {GEM_ORBITS.map((orbit, index) => (
+          <span
+            key={index}
+            className="orbit"
+            style={
+              {
+                "--radius": `${orbit.radius}px`,
+                "--dur": orbit.dur,
+                "--delay": orbit.delay,
+                "--size": `${orbit.size}px`,
+              } as React.CSSProperties
+            }
+          >
+            <span className="dot" />
+          </span>
+        ))}
       </div>
     </div>
   );

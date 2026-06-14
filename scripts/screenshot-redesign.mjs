@@ -26,7 +26,7 @@ async function shoot({ theme, nav, file }) {
     await page.getByTestId(nav).click();
     await page.waitForTimeout(800);
   }
-  await page.screenshot({ path: `${OUT}/${file}` });
+  await page.screenshot({ path: `${OUT}/${file}`, animations: "disabled", timeout: 60000 });
   console.log(`captured ${file} (${theme})`);
   await context.close();
 }
